@@ -8,14 +8,12 @@ from load_data import *
 def reload_pretty_data(month, year,
                       classify=False):
     """
-    load_month loads and preprocesses the airline data
-    associated with the given month and year, which must
-    be passed in as STRINGS of MM YY format.
+    reload_pretty_data loads already prettified data and splits
+    the data into X (all columns but last) and y (last column)
+    such that X[i] is the feature vector for flight i, with lateness
+    in y[i]
     
-    max_rows    maximum number of rows to load
-
-    For example, the following code loads 10 rows from June '15
-        june = load_month("06", "15", max_rows = 10)
+    classify       True, loads up discrete data (-1,1) labels for y
     """
     if classify:
         filename = "data/{}_{}_classify.csv".format(year, month)
@@ -27,6 +25,30 @@ def reload_pretty_data(month, year,
         delimiter = ",")
     
     return (data[:,:-1],data[:,-1])
+
+def date_to_cyclic(datestring):
+    """
+    date_to_cyclic converts a date, formatted as a string, into
+    a numpy feature vector (???)
+    
+    datestring    string formatted as however the raw data is
+    
+    returns       numpy vector, however you want the cyclic date to be
+                  represented in the final flight feature vector
+    """
+    pass
+
+def time_to_cyclic(time_into_day):
+    """
+    time_into_day  integer between 0 and 2400, such that the int hhmm
+                   represents the time at hh:mm
+                   
+    returns       numpy vector, however you want the time to be
+                  represented in the final flight feature vector
+                  (does not have to be cyclic; just something other than
+                  the int, which isn't even smooth)
+    """
+    pass
 
 def pretty_data(data, maps = None, classify=False):
     if maps is None:
