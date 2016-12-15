@@ -28,6 +28,18 @@ def reload_pretty_data(month, year,
     
     return (data[:,:-1],data[:,-1])
 
+def date_to_cyclic(datestring):
+    """
+    date_to_cyclic converts a date, formatted as a string, into
+    a numpy feature vector (???)
+    
+    datestring    string formatted as however the raw data is
+    
+    returns       numpy vector, however you want the cyclic date to be
+                  represented in the final flight feature vector
+    """
+    pass
+
 def pretty_data(data, maps = None, classify=False):
     if maps is None:
         maps = [lambda x:x]*2
