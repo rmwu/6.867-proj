@@ -1,0 +1,107 @@
+%\documentclass{amsart}
+
+\documentclass{article}
+\usepackage[letterpaper,hmargin=15mm,vmargin=20mm]{geometry}
+\usepackage[nosetup, colorlinks]{tony}
+\usepackage{graphicx}
+
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+
+\usepackage{mathpazo}
+\usepackage{microtype}
+\usepackage{multicol}
+
+\usepackage{diagbox}
+
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+%\usepackage[printwatermark]{xwatermark}
+%\newwatermark*[allpages,color=gray!50,angle=45,scale=3,xpos=0,ypos=0]{DRAFT}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\NLL}{NLL}
+\newcommand{\sind}[1]{^{(#1)}}
+
+\title{Classifying airline departure delays with ensemble methods}
+\author{Tony Zhang and Menghua Wu}
+\date{December 16, 2016}
+
+\begin{document}
+\maketitle
+
+\begin{multicols}{2}
+
+% % % % % % % % % %
+%    INTRODUCTION
+% % % % % % % % % %
+
+\section{Background}
+\label{sec:bg}
+
+Often, people purchase plane tickets
+to minimize monetary cost.
+However, for many circumstances,
+there is also utility in
+in minimizing the risk that a flight will be late.
+Thus, the underlying motivation of this paper
+is to provide a metric of expected flight delay
+as a means of comparing different flights.
+
+Each year,
+the United States Bureau of Transportation Statistics (BTS)
+compiles comprehensive datasets
+regarding the nation's transportation systems,
+including aviation, maritime, highway, and rail.
+In this paper, we focus on the airline dataset,
+which reports on a wide range of variables including
+airline, air carrier, origin, and destination, and flight delays.
+We downloaded exhaustive airline data
+from June 2015 to May 2016, inclusive.
+Each month's data provides
+approximately 500,000 samples of individual flight data,
+some of which may be incomplete.
+We used these data to build a classifier
+that predicts whether or not a flight's departure
+is expected to be delayed.
+We combined several methods of classification
+and compare their results here.
+
+\section{Dataset transformations}
+\label{sec:dataset}
+
+The raw dataset from the BTS
+includes unconventional features,
+so we preprocessed our dataset
+to improve classification feasibility.
+
+\subsection{Discrete features}
+
+Discrete features in our dataset included
+air carrier, airline, origin, and destination.
+We mapped these to one-hot vectors,
+whose dimensions were flexible based on
+the number of categories present in the dataset.
+
+\subsection{Continuous linear features}
+
+xxx
+
+\subsection{Cyclic features}
+
+xxxx
+
+\section{Random forest classification}
+
+We leveraged existing random forest implementations
+and experimented with different parameters.
+
+\section{Comparison with other methods}
+
+\end{multicols}
+
+\end{document}
+
