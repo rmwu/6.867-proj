@@ -49,7 +49,8 @@ def random_forest(data_train, data_validate, data_test,
                  n_estimators=10, entropy=True,
                  max_features=1.0, max_depth=2,
                  min_samples_leaf=1, bootstrap=True,
-                 oob_score=False):
+                 oob_score=False,
+                 print_params=False):
     """
     Uses the SKLearn Random Forest Classifier to perform
     bagged tree classification
@@ -82,4 +83,5 @@ def random_forest(data_train, data_validate, data_test,
     score = randomForest.score(X_test, y_test)
     
     print("Out of the box score {}".format(score))
-    print("Feature importances {}".format(feature_importance))
+    if print_params:
+        print("Feature importances {}".format(feature_importance))
