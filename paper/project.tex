@@ -70,6 +70,44 @@ is expected to be delayed.
 We combined several methods of classification
 and compare their results here.
 
+\section{Random forest classification}
+
+We leveraged existing random forest implementations
+and determined the optimal parameters for classifying our data.
+
+There may be strong relationships between
+month of year and airline delay,
+as the holiday season is often associated with
+inclement weather and an increase in delays.
+Therefore, we trained a separate random forest classifier
+for each month, in additional to a single classifier
+for the combined data.
+For each month,
+the resultant model was an average of
+that month's classifier and the combined classifier,
+weighted by validation error.
+
+% TODO INSERT PLOT and data
+
+On the testing data,
+the combined classifier performed better
+than each classifier alone,
+perhaps due to increased generalization.
+
+\subsection{Tree depth}
+
+We experimented with increasing the xxx
+
+\subsection{Masking features}
+
+xxx maximum number of features to consider when splitting
+
+\subsection{Early stopping}
+
+or the impurity setting
+
+\subsection{Whatever you call ``warm start''}
+
 \section{Dataset transformations}
 \label{sec:dataset}
 
@@ -78,7 +116,9 @@ includes unconventional features,
 so we preprocessed our dataset
 to improve classification feasibility.
 
-\subsection{Discrete features}
+Use best parameters from previous section.
+
+\subsection{Discrete features this doesn't go here}
 
 Discrete features in our dataset included
 air carrier, airline, origin, and destination.
@@ -86,20 +126,36 @@ We mapped these to one-hot vectors,
 whose dimensions were flexible based on
 the number of categories present in the dataset.
 
-\subsection{Continuous linear features}
+\subsection{Cyclic temporal features}
 
-xxx
+Temporal features, such as time of day,
+are naturally cyclic.
+Representing them on a linear scale
+neglects the fact that
 
-\subsection{Cyclic features}
+\subsection{Geographic relations within data}
 
-xxxx
+So far, we have considered origin and destination data
+as discrete values,
+each airport with an equal probability of causing delays.
+That is, the distance between any two airports
+(as one-hot vectors) is the same.
+However, this may not be the case in the real world.
 
-\section{Random forest classification}
+\subsection{Geographic displacement}
 
-We leveraged existing random forest implementations
-and experimented with different parameters.
+East west vs. vice versa, etc.
 
 \section{Comparison with other methods}
+
+We compared our ensemble classifier
+with other types of classifiers,
+including logistic regression, a neural network,
+and a kernelized Pegasos classifier
+with the Gaussian RBF kernel.
+Due to the large size of our dataset,
+we were limited to
+stochastic and minibatch methods.
 
 \end{multicols}
 
