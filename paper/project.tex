@@ -44,26 +44,27 @@
 
 Often, people purchase plane tickets
 to minimize monetary cost.
-However, for many circumstances,
-there is also utility in
-in minimizing the risk that a flight will be late.
-Thus, the underlying motivation of this paper
-is to provide a metric of expected flight delay
-as a means of comparing different flights.
+However, price is not the only consideration
+when consumers purchase tickets---
+not all flights are created equal.
+In particular,
+flyers often care about and take into account
+the risk that a flight will be delayed.
+This paper hopes to quantify this risk
+on the basis of past flight delay data.
 
-Each year,
-the United States Bureau of Transportation Statistics (BTS)
-compiles comprehensive datasets
-regarding the nation's transportation systems,
+The United States Bureau of Transportation Statistics (BTS)
+compiles comprehensive datasets annually
+regarding the nation's transportation infrastructure,
 including aviation, maritime, highway, and rail.
-In this paper, we focus on the airline dataset,
-which reports on a wide range of variables including
-airline, air carrier, origin, and destination, and flight delays.
-We downloaded exhaustive airline data
-from June 2015 to May 2016, inclusive.
-Each month's data provides
-approximately 500,000 samples of individual flight data,
-some of which may be incomplete.
+In this paper, we focus on the aviation dataset,
+which reports on a wide range of variables concerning individual flights,
+including carrier, origin and destination, and flight delays.
+
+We downloaded data from June 2015 to May 2016, inclusive.
+Each month of data reports on
+approximately 500000 individual flights.
+Notably, some of the data is missing.
 We used these data to build a classifier
 that predicts whether or not a flight's departure
 is expected to be delayed.
