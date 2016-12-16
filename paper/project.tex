@@ -27,6 +27,8 @@
 \DeclareMathOperator{\NLL}{NLL}
 \newcommand{\sind}[1]{^{(#1)}}
 
+\newcommand\halfwidth{3.25in}
+
 \title{Prediction of airline departure delays}
 \author{Tony Zhang and Menghua Wu}
 \date{December 16, 2016}
@@ -202,6 +204,7 @@ in Figure~\ref{fig:log-reg-c-sweep}.
 
 \subsection{Support vector machines}
 
+We also considered training support vector machines.
 % TODO TODO TODO
 
 
@@ -253,8 +256,8 @@ over our baseline.
 
 \begin{figure*}[t] %  figure placement: here, top, bottom, or page
    \centering
-   \includegraphics[width=3.25in]{img/mlp-one-hidden-layer.pdf}
-   \includegraphics[width=3.25in]{img/mlp-alpha-experiment.pdf}
+   \includegraphics[width=\halfwidth]{img/mlp-one-hidden-layer.pdf}
+   \includegraphics[width=\halfwidth]{img/mlp-alpha-experiment.pdf}
    \caption{Single-layer multilayer perceptron validation accuracies.
    The plot on the left shows the results of varying the number of hidden nodes
    while fixing $\alpha = 10^{-5}$.
@@ -302,10 +305,10 @@ we explored the effects of varying hyperparameters such as
 
 \begin{figure*}[t]
    \centering
-   \includegraphics[width=3.25in]{img/rf-numEstimators.pdf}\hspace{-.1in}
-   \includegraphics[width=3.25in]{img/rf-maxTreeDepth.pdf}
-   \includegraphics[width=3.25in]{img/rf-impurity.pdf}\hspace{-.1in}
-   \includegraphics[width=3.25in]{img/rf-maskingFeatures.pdf}
+   \includegraphics[width=\halfwidth]{img/rf-numEstimators.pdf}\hspace{-.1in}
+   \includegraphics[width=\halfwidth]{img/rf-maxTreeDepth.pdf}
+   \includegraphics[width=\halfwidth]{img/rf-impurity.pdf}\hspace{-.1in}
+   \includegraphics[width=\halfwidth]{img/rf-maskingFeatures.pdf}
    \caption{Varying parameters for random forest classifier.
      Setting a minimum impurity on leaves and feature masking
      do not significantly affect validation or testing accuracy.}
@@ -517,8 +520,8 @@ with a multi-class exponential loss function).
 
 \begin{figure*}[t]
    \centering
-   \includegraphics[width=3.25in]{img/adaB-numEstimators.pdf}\hspace{-.1in}
-   \includegraphics[width=3.25in]{img/adaB-learningRate.pdf}
+   \includegraphics[width=\halfwidth]{img/adaB-numEstimators.pdf}\hspace{-.1in}
+   \includegraphics[width=\halfwidth]{img/adaB-learningRate.pdf}
    \caption{Varying parameters for the Adaboost-SAMME classifier,
    with a decision tree weak learner.
    Increasing number of estimators accuracy,
@@ -659,8 +662,8 @@ have similar contributions to the probabilities of their flights being late.
 Still,
 removing one-hot encodings
 reduced the computational load of training our models.
-Results on accuracy are shown below,
-with the best models determined by validation.
+Below, we present accuracies of the best models in each model class
+(as determined by validation accuracy)
 
 \begin{center}
     \begin{tabular}{c|cccc}
@@ -680,15 +683,17 @@ did not suffer as much of a loss in accuracy,
 which makes sense intuitively.
 
 Indeed, decision trees effectively discretize feature space
-by considering splits,
-so that removing our discrete features (the one-hot vectors)
+by considering splits.
+Therefore, removing our discrete features (the one-hot vectors)
 did not actually remove much information for the random forest models.
 
 \subsection{Geographic displacement}
 
 In addition to absolute geographic locations,
-we also considered the displacement
-for each flight.
+we also considered the displacement for each flight.
+In particular, we included features for
+the \emph{change} in latitude and longitude
+over the course of the flight.
 With only latitude, longitude, and displacement data
 for airports (no one-hot vectors),
 our best models attained the following accuracies.
