@@ -56,7 +56,7 @@ on the basis of past flight delay data.
 The United States Bureau of Transportation Statistics (BTS)
 compiles comprehensive datasets annually
 regarding the nation's transportation infrastructure,
-including aviation, maritime, highway, and rail.
+including aviation, maritime, highway, and rail.~\cite{bts}
 In this paper, we focus on the aviation dataset,
 which reports on a wide range of variables concerning individual flights,
 including carrier, origin and destination, and flight delays.
@@ -64,7 +64,7 @@ We will primarily concern ourselves with classification:
 whether a flight is delayed or not.
 
 % TODO change this section?
-We downloaded data from June 2015,
+We downloaded data from the month of June 2015,
 with a total of approximately 500000 individual flights.
 Notably, some of the data is missing.
 We used these data to build a classifier
@@ -73,10 +73,13 @@ is expected to be delayed.
 We applied several methods of classification
 and compare their results here.
 
+While we will briefly remind the reader
+of particular aspects of each model,
+we assume familiarity them.
+As a reference for implementation details and model specifics,
+we direct the reader to \cite{sklearn-ug}.
 
 \section{Data preprocessing}
-
-% TODO describe this
 
 For simplicity,
 we only considered the following data features:
@@ -149,8 +152,10 @@ with $80/10/10\%$ of the data, respectively.
 
 % TODO
 
-\section{Logistic regression}
-\label{sec:logreg}
+\section{Linear models}
+
+\subsection{Logistic regression}
+\label{subsec:logreg}
 
 To establish a baseline accuracy
 and to benchmark our future efforts,
@@ -187,12 +192,18 @@ in Figure~\ref{fig:log-reg-c-sweep}.
 
 \begin{figure*}[t] %  figure placement: here, top, bottom, or page
    \centering
-   \includegraphics[width=4in]{img/log-reg-C-sweep.pdf}
+   \includegraphics[width=4.5in]{img/log-reg-C-sweep.pdf}
    \caption{Logistic regression validation accuracies
    under $L_1$ and $L_2$ regularization
    for varying values of regularization parameter $C$.}
    \label{fig:log-reg-c-sweep}
 \end{figure*}
+
+
+\subsection{Support vector machines}
+
+% TODO TODO TODO
+
 
 \section{Multilayer perceptrons}
 
@@ -242,8 +253,8 @@ over our baseline.
 
 \begin{figure*}[t] %  figure placement: here, top, bottom, or page
    \centering
-   \includegraphics[width=3in]{img/mlp-one-hidden-layer.pdf}
-   \includegraphics[width=3in]{img/mlp-alpha-experiment.pdf}
+   \includegraphics[width=3.25in]{img/mlp-one-hidden-layer.pdf}
+   \includegraphics[width=3.25in]{img/mlp-alpha-experiment.pdf}
    \caption{Single-layer multilayer perceptron validation accuracies.
    The plot on the left shows the results of varying the number of hidden nodes
    while fixing $\alpha = 10^{-5}$.
@@ -258,7 +269,7 @@ over our baseline.
 To see the effects of regularization,
 we considered networks with logistic, tanh, and ReLU activations
 on a single hidden layer of 25 nodes.
-As we did for the parameter $C$ in section~\ref{sec:logreg},
+As we did for the parameter $C$ in section~\ref{subsec:logreg},
 we performed a sweep over log-uniformly spaced $\alpha$ from $10^{-5}$ to $10^5$.
 We present our results in Figure~\ref{fig:mlp-plots}.
 We see marginally better performance by the ReLU model with $\alpha=10^{-3}$.
@@ -291,10 +302,10 @@ we explored the effects of varying hyperparameters such as
 
 \begin{figure*}[t]
    \centering
-   \includegraphics[width=3in]{img/rf-numEstimators.pdf}\hspace{-.1in}
-   \includegraphics[width=3in]{img/rf-maxTreeDepth.pdf}
-   \includegraphics[width=3in]{img/rf-impurity.pdf}\hspace{-.1in}
-   \includegraphics[width=3in]{img/rf-maskingFeatures.pdf}
+   \includegraphics[width=3.25in]{img/rf-numEstimators.pdf}\hspace{-.1in}
+   \includegraphics[width=3.25in]{img/rf-maxTreeDepth.pdf}
+   \includegraphics[width=3.25in]{img/rf-impurity.pdf}\hspace{-.1in}
+   \includegraphics[width=3.25in]{img/rf-maskingFeatures.pdf}
    \caption{Varying parameters for random forest classifier.
      Setting a minimum impurity on leaves and feature masking
      do not significantly affect validation or testing accuracy.}
@@ -506,8 +517,8 @@ with a multi-class exponential loss function).
 
 \begin{figure*}[t]
    \centering
-   \includegraphics[width=3in]{img/adaB-numEstimators.pdf}\hspace{-.1in}
-   \includegraphics[width=3in]{img/adaB-learningRate.pdf}
+   \includegraphics[width=3.25in]{img/adaB-numEstimators.pdf}\hspace{-.1in}
+   \includegraphics[width=3.25in]{img/adaB-learningRate.pdf}
    \caption{Varying parameters for the Adaboost-SAMME classifier,
    with a decision tree weak learner.
    Increasing number of estimators accuracy,
@@ -517,11 +528,11 @@ with a multi-class exponential loss function).
 \end{figure*}
 
 With an ensemble of 50 decision tree classifiers,
-the Adaboost algorithm performed with
+the Adaboost algorithm produced
 a training accuracy of 0.669
 and a testing accuracy of 0.668.
-This is in contrast to the previous methods,
-as training accuracy is not drastically greater than
+Unlike with our previous models,
+training accuracy is not drastically greater than
 testing accuracy.
 
 When we increase the number of estimators,
@@ -542,11 +553,24 @@ as on training data.
     \end{tabular}
 \end{center}
 
-We also manipulated the learning rate,
-which decreases the contribution of each estimator
-by the specified amount,
-and maintained 32 estimators.
-However, decreasing learning rate worsened accuracies.
+We also manipulated the learning rate $\nu$,
+a regularization parameter which exponentially weights the predictions
+from earlier stages of boosting.
+Whereas a standard forward-stagewise additive model
+would take the form
+\begin{equation}
+    f = \sum_{i=1}^m \gamma_i f_i
+\end{equation}
+for coefficients $\gamma_i$ on ensemble members $f_i$,
+regularizing with $\nu$ gives
+\begin{equation}
+    f = \sum_{i=1}^m \nu^{m - i}\gamma_i f_i.
+\end{equation}
+Note that setting $\nu = 1$ recovers the unregularized model.
+
+Fixing an ensemble size of 32,
+we found that decreasing learning rate worsened both training
+and validation accuracies.
 The results are graphically displayed in Figure \ref{fig:adaB-params}.
 
 \begin{center}
@@ -560,6 +584,7 @@ The results are graphically displayed in Figure \ref{fig:adaB-params}.
     \end{tabular}
 \end{center}
 
+We do not further consider regularizing by learning rate.
 
 \section{Possible extensions}
 
@@ -570,12 +595,12 @@ logistic regression models with Adaboost.
 It attained a training accuracy of 0.657
 and a testing accuracy of 0.661.
 When we increased to 100 estimators,
-the training accuracy only reached 0.660
-and testing accuracy, 0.662.
-This is worse than the boosted decision trees,
+the training accuracy only reached 0.660.
+The resulting accuracy of 0.662
+was lower than that of boosted decision trees,
 so it seems that
 logistic regression is not as good a
-weak learner in this application.
+weak learner for boosting.
 %
 %\subsection{Gradient tree boosting}
 %
@@ -593,16 +618,22 @@ on these data.
 
 \subsection{Geographic relations within data}
 
-So far, we have considered origin and destination data
-as discrete values,
-each airport with an equal probability of causing delays.
-That is, the distance between any two airports
+So far, we have treated the airport feature as a categorical variable,
+discarding any geospatial information it carried.
+In particular,
+by using a one-hot encoding of airport information,
+we imposed a discrete topology on the airports.
+That is, the ``distance" between any two airports
 (as one-hot vectors) is the same.
-However, this may not be the case in the real world.
-With a separate table that mapped
-airport IDs to latitude-longitude,
-we added 4 additional columns to the data,
-for the latitude and longitude of origin and destination airports.
+
+However, geographical information
+is very likely to be helpful in making predictions.
+For example, it is conceivable that airline companies
+would work harder to ensure punctual service
+on profitable long-distance flights.
+Therefore, we added 4 additional features to the data
+representing the latitude and longitude
+of both origin and destination airports.
 
 With these adjustments,
 our best random forest model,
@@ -611,11 +642,23 @@ but testing accuracy remained about the same,
 at 0.688.
 
 In addition, we tried representing origin and destination
-only with latitude longitude coordinates.
-This greatly reduced the number of features, from 469 to 7.
-While this approximation ignores the fact that
-geographically close airports might not be very similar,
-it also reduces the computational load.
+only with latitude longitude coordinates;
+that is, we did not represent airports with one-hot vectors,
+greatly reducing the number of features, from 469 to 7.
+
+Note that doing so emphasizes the implicit assumption
+made by geographic encoding of airports
+that close airports are similar,
+which may not at all be the case.
+For example, there is no reason to believe
+that the three major airports
+in the New York metropolitan area,
+John~F. Kennedy, LaGuardia, and Newark,
+have similar contributions to the probabilities of their flights being late.
+
+Still,
+removing one-hot encodings
+reduced the computational load of training our models.
 Results on accuracy are shown below,
 with the best models determined by validation.
 
@@ -630,10 +673,16 @@ with the best models determined by validation.
     \end{tabular}
 \end{center}
 
-The fewer features significantly reduced
-logistic regression's and Adaboost's accuracy.
-Interestingly, however, the optimal random forest model
-did not suffer as much of a loss in accuracy.
+The fewer features significantly reduced the accuracies
+of both the logistic regression model and the Adaboost ensemble model.
+Interestingly, the optimal random forest model
+did not suffer as much of a loss in accuracy,
+which makes sense intuitively.
+
+Indeed, decision trees effectively discretize feature space
+by considering splits,
+so that removing our discrete features (the one-hot vectors)
+did not actually remove much information for the random forest models.
 
 \subsection{Geographic displacement}
 
@@ -660,9 +709,39 @@ on using solely position data of origin and destination,
 displacements still do not reach the accuracy attained
 by representing airports as one-hot vectors.
 
+\subsection{Additional temporal features}
+
+% day of week
+% day of month
+
+
 \section{Conclusions}
 
-xxx
+
+
+
+
+\section{Divison of labor}
+
+Both group members divided the work equally.
+However, we each focused on different sections of the paper.
+M.W. focused on ensemble methods, including random forests and boostin,
+while T.Z. concentrated on linear models and multilayer perceptrons.
+
+\begin{thebibliography}{4}
+  \bibitem{bts}
+  United States Bureau of Transportation Statistics,
+  \emph{Airline On-Time Statistics},
+  2016,
+  \url{https://apps.bts.gov/xml/ontimesummarystatistics/src/index.xml}.
+  
+  \bibitem{sklearn-ug}
+  \texttt{scikit-learn} developers,
+  \emph{\texttt{scikit-learn} User Guide},
+  2016,
+  \url{http://scikit-learn.org/stable/user_guide.html}
+\end{thebibliography}
+
 
 \end{multicols}
 
