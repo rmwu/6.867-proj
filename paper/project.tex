@@ -39,8 +39,7 @@
 %    INTRODUCTION
 % % % % % % % % % %
 
-\section{Background}
-\label{sec:bg}
+\section{Introduction}
 
 Often, people purchase plane tickets
 to minimize monetary cost.
@@ -63,6 +62,7 @@ including carrier, origin and destination, and flight delays.
 We will primarily concern ourselves with classification:
 whether a flight is delayed or not.
 
+% TODO change this section?
 We downloaded data from June 2015 to May 2016, inclusive.
 Each month of data reports on
 approximately 500000 individual flights.
@@ -73,9 +73,32 @@ is expected to be delayed.
 We combined several methods of classification
 and compare their results here.
 
-\section{Feature selection and processing}
+
+\section{Data preprocessing}
 
 % TODO describe this
+
+For simplicity,
+we only considered the following data features:
+\begin{itemize}
+    \item
+    Departure date and time
+    \item
+    Airline
+    \item
+    Origin and destination airports
+\end{itemize}
+
+Since airline and airports are categorical features,
+we encoded them as one-hot vectors.
+In the data subset we considered,
+there were 14 airlines and roughly 250 airports.
+
+For date and time,
+we began by encoding them as days into a year
+and minutes into the day.
+This representation leaves much to be desired, however.
+
 
 \subsection{Cyclic features}
 
@@ -89,24 +112,76 @@ the time 23:59 will be considered ``more similar"
 by any machine learning model to noon than to 00:01,
 which disagrees with our intuitive notions of closeness.
 
-A better method is to construct a feature map
-that respects our notions of closeness.
+A better representation of cyclic data
+would respects our notions of closeness.
 An obvious choice is to map a linear data point $x \in [0, T)$
 onto a unit circle by
 \begin{equation}
+    \label{eq:cyc-mapping}
     x \mapsto \lt(\cos\f{2\pi x}{T}, \sin\f{2\pi x}{T}\rt).
 \end{equation}
-In the case of time of day,
+For instance, if we were to encode the time of day,
 noon would have ``angle" $\f{2\pi x}{T} = \pi$
-and thus get mapped to the point $(-1, 0)$.
+and would thus get mapped to the point $(-1, 0)$.
 
-% TODO discuss how this goes
+We encoded dates (with $T$ being a year)
+and time (with $T$ being a single day).
+In preliminary testing,
+we found that this encoding
+noticeably improved classification accuracies
+for a variety of models,
+including logistic regression and random forests.
+
+\subsection{Dataset partitioning}
+
+% TODO
 
 \section{Logistic regression}
 
 To establish a baseline accuracy
 and to benchmark our future efforts,
-we began with a simple logistic regression classifier.
+we began with a regularized logistic regression classifier
+with $L_2$ regularization.
+Recall that such a classifier attempts to minimize a loss of the form
+\begin{equation}
+    \label{eq:log-reg-l2-loss}
+    J(w, b) = \f12 w^T w + C \sum_i \log\lt(1 + e^{-y\sind{i}(w^T x\sind{i} + b)}\rt)
+\end{equation}
+where the sum is taken over all training data points.
+The parameter $C$ controls the amount of regularization;
+a smaller value of $C$ produces greater regularization.
+
+We performed a sweep over log-uniformly spaced $C$
+from $10^{-5}$ to $10^5$ (with factors of 10 between each $C$).
+Optimizing for validation accuracy,
+we selected $C^* = 100$,
+which yielded a test accuracy of $0.661$.
+
+Unsurprisingly,
+replacing the first term in Equation~\ref{eq:log-reg-l2-loss}
+with an $L_1$ norm on $w$
+gives us the loss function for a classifier with $L_1$ regularization.
+Performing a sweep over $C$ as we did previously
+and optimizing for validation accuracy again,
+we found an almost identical test accuracy of $0.660$.
+
+We present the validation accuracies
+under both regularization schemes
+for all values of $C$ we tested
+in Figure~\ref{fig:log-reg-c-sweep}.
+
+
+\begin{figure*}[t] %  figure placement: here, top, bottom, or page
+   \centering
+   \includegraphics[width=4in]{img/log-reg-C-sweep.pdf}
+   \caption{Logistic regression validation accuracies
+   under $L_1$ and $L_2$ regularization
+   for varying values of regularization parameter $C$.}
+   \label{fig:log-reg-c-sweep}
+\end{figure*}
+
+
+\section{Multilayer perceptrons}
 
 
 \section{Random forest classification}
@@ -167,13 +242,13 @@ for some depths.
 %Training data score 0.976025
 %Testing data score 0.6472127715257786
 \begin{center}
-    \begin{tabular}{c|c c c c c}
-        max depth
-        		& 4 & 8 & 16 & 34 & 256 \\
-        training accuracy
-        		& 0.657 & 0.679 & 0.750 & 0.899 & 0.976\\
-        validation accuracy
-        		& 0.644 & 0.656 & 0.667 & 0.654 & 0.647
+    \begin{tabular}{c|ccccc}
+        max depth &
+          4 & 8 & 16 & 32 & 256 \\\hline
+        training acc. &
+          0.657 & 0.679 & 0.750 & 0.899 & 0.976\\
+        validation acc. &
+          0.644 & 0.656 & 0.667 & 0.654 & 0.647
     \end{tabular}
 \end{center}
 Imposing a maximum tree depth effectively
