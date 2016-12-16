@@ -95,9 +95,53 @@ the combined classifier performed better
 than each classifier alone,
 perhaps due to increased generalization.
 
-\subsection{Tree depth}
+\subsection{Maximum tree depth}
 
-We experimented with increasing the xxx
+By default, tree depth is unconstrained,
+so the classifier runs until all nodes
+are expanded into valid leaves.
+We experimented with imposing a maximum depth
+as a form of early stopping.
+This method generally decreased training accuracy,
+but increased validation accuracy
+for some depths.
+%max_depth_leaf 4
+%Training data score 0.6570625
+%Testing data score 0.6447265113844544
+%
+%max_depth_leaf 8
+%Training data score 0.679025
+%Testing data score 0.6563726773096048
+%
+%max_depth_leaf 16
+%Training data score 0.75025
+%Testing data score 0.6665794294687255
+%
+%max_depth_leaf 32
+%Training data score 0.8992
+%Testing data score 0.6656634388903429
+%
+%max_depth_leaf 64
+%Training data score 0.9726625
+%Testing data score 0.6540172729651924
+%
+%max_depth_leaf 256
+%Training data score 0.976025
+%Testing data score 0.6472127715257786
+\begin{center}
+    \begin{tabular}{c|c c c c c}
+        max depth
+        		& 4 & 8 & 16 & 34 & 256 \\
+        training accuracy
+        		& 0.657 & 0.679 & 0.750 & 0.899 & 0.976\\
+        validation accuracy
+        		& 0.644 & 0.656 & 0.667 & 0.654 & 0.647
+    \end{tabular}
+\end{center}
+Imposing a maximum tree depth effectively
+reduces overfitting to training data.
+
+\subsection{Number of estimators}
 
 \subsection{Masking features}
 
