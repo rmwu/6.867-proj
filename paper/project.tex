@@ -60,6 +60,8 @@ including aviation, maritime, highway, and rail.
 In this paper, we focus on the aviation dataset,
 which reports on a wide range of variables concerning individual flights,
 including carrier, origin and destination, and flight delays.
+We will primarily concern ourselves with classification:
+whether a flight is delayed or not.
 
 We downloaded data from June 2015 to May 2016, inclusive.
 Each month of data reports on
@@ -70,6 +72,42 @@ that predicts whether or not a flight's departure
 is expected to be delayed.
 We combined several methods of classification
 and compare their results here.
+
+\section{Feature selection and processing}
+
+% TODO describe this
+
+\subsection{Cyclic features}
+
+Features such as time of day and day of year
+are naturally cyclic.
+Representing them on a linear scale
+therefore imposes an unnatural metric on them.
+For instance,
+if we naively represent times as ``minutes into day",
+the time 23:59 will be considered ``more similar"
+by any machine learning model to noon than to 00:01,
+which disagrees with our intuitive notions of closeness.
+
+A better method is to construct a feature map
+that respects our notions of closeness.
+An obvious choice is to map a linear data point $x \in [0, T)$
+onto a unit circle by
+\begin{equation}
+    x \mapsto \lt(\cos\f{2\pi x}{T}, \sin\f{2\pi x}{T}\rt).
+\end{equation}
+In the case of time of day,
+noon would have ``angle" $\f{2\pi x}{T} = \pi$
+and thus get mapped to the point $(-1, 0)$.
+
+% TODO discuss how this goes
+
+\section{Logistic regression}
+
+To establish a baseline accuracy
+and to benchmark our future efforts,
+we began with a simple logistic regression classifier.
+
 
 \section{Random forest classification}
 
@@ -171,30 +209,6 @@ We mapped these to one-hot vectors,
 whose dimensions were flexible based on
 the number of categories present in the dataset.
 
-\subsection{Cyclic features}
-
-Features such as time of day and day of year
-are naturally cyclic.
-Representing them on a linear scale
-therefore imposes an unnatural metric on them.
-For instance,
-if we naively represent times as ``minutes into day",
-the time 23:59 will be considered ``more similar"
-by any machine learning model to noon than to 00:01,
-which disagrees with our intuitive notions of closeness.
-
-A better method is to construct a feature map
-that respects our notions of closeness.
-An obvious choice is to map a linear data point $x \in [0, T)$
-onto a unit circle by
-\begin{equation}
-    x \mapsto \lt(\cos\f{2\pi x}{T}, \sin\f{2\pi x}{T}\rt).
-\end{equation}
-In the case of time of day,
-noon would have ``angle" $\f{2\pi x}{T} = \pi$
-and thus get mapped to the point $(-1, 0)$.
-
-% TODO discuss how this goes
 
 \subsection{Geographic relations within data}
 

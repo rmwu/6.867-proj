@@ -118,6 +118,8 @@ def svm_classify(data_train, data_test, C, kernel='rbf', degree=3, balanced=True
     X_train, y_train = data_train
     X_test, y_test = data_test
 
+    print("this shit is slow af, are you sure you want to do this?")
+
     print("Training SVM, C={}, kernel={}, balanced={} ...".format(C, kernel, balanced))
     svm_classifier = sklearn.svm.SVC(C=C, kernel=kernel, degree=degree, coef0=1.0, shrinking=True,
         tol=0.001, class_weight=('balanced' if balanced else None),
