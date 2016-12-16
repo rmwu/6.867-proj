@@ -21,6 +21,7 @@
 
 \usepackage{tikz}
 \usetikzlibrary{arrows}
+\usetikzlibrary{angles,patterns,calc}
 
 \DeclareMathOperator{\sgn}{sgn}
 \DeclareMathOperator{\NLL}{NLL}
@@ -70,7 +71,7 @@ Notably, some of the data is missing.
 We used these data to build a classifier
 that predicts whether or not a flight's departure
 is expected to be delayed.
-We combined several methods of classification
+We applied several methods of classification
 and compare their results here.
 
 
@@ -123,6 +124,11 @@ onto a unit circle by
 For instance, if we were to encode the time of day,
 noon would have ``angle" $\f{2\pi x}{T} = \pi$
 and would thus get mapped to the point $(-1, 0)$.
+
+\begin{minipage}{\linewidth}
+    \centering
+    \input{tex/cyclic-diagram-tikz.tex}
+\end{minipage}
 
 We encoded dates (with $T$ being a year)
 and time (with $T$ being a single day).
@@ -354,7 +360,7 @@ of our data, with many one-hot vectors.
 
 If we do not constrain the depth of the tree,
 an alternative method of early stopping
-is to increase the maximum size of each leaf.
+is to increase the minimum tolerable impurity at each leaf.
 However, changing this value (up and down)
 was not as effective as
 limiting tree depth, and had little effect.
