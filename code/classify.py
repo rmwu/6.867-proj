@@ -2,12 +2,14 @@ import numpy as np
 import math
 
 import sklearn
+
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neural_network import MLPClassifier
 
 def log_regression(data_train, data_validate, data_test,
-                   lambdaa, threshold, penalty,
+                   lambdaa, threshold,
                    print_params=False):
     """
     Uses the SKLearn Logistic Regression module to perform logistic
@@ -20,21 +22,32 @@ def log_regression(data_train, data_validate, data_test,
     lambdaa        regularization?
     threshold      tolerance? I don't remember
     """
+    # load testing data
+    X_train = data_train[0]
+    y_train = data_train[1]
+    
     # regularization factor
     c = 1.0 / lambdaa
     
-    log_reg = LogisticRegression(penalty=penalty, C=c, tol=threshold)
+    l2reg = LogisticRegression(penalty="l2", C=c, tol=threshold)
+    l1reg = LogisticRegression(penalty="l1", C=c, tol=threshold)
     
     # fit the data
-    log_reg.fit(*data_train)
+    l2reg.fit(X_train, y_train)
+    l1reg.fit(X_train, y_train)
 
-    dataz = [data_train, data_validate, data_test]
-    accuracies = [log_reg.score(*dataset) for dataset in dataz]
-    print("Train/val/test accuracies: {}".format(accuracies))
-
-    cross_entropies = [sklearn.metrics.log_loss(dataset[1], log_reg.predict_proba(dataset[0]), normalize=True) for dataset in dataz]
-    print("t/v/t cross-entropy loss: {}".format(cross_entropies))
-    return (log_reg, accuracies, cross_entropies)
+    # load data from csv files
+    X_validate = data_validate[0]
+    y_validate = data_validate[1]
+    
+    print("Out-of-the-box scores.")
+    print("L2 accuracy: {}".format(l2reg.score(X_validate, y_validate)))
+    if print_params:
+        print("L2 params {}".format(l2reg.coef_))
+    print("L1 accuracy: {}".format(l1reg.score(X_validate, y_validate)))
+    if print_params:
+        print("L1 params {}".format(l1reg.coef_))
+    print("")
     
 def random_forest(data_train, data_validate, data_test,
                  n_estimators=10, entropy=True,
@@ -78,9 +91,37 @@ def random_forest(data_train, data_validate, data_test,
     print("Out of the box score {}".format(score))
     if verbose:
         print("Feature importances {}".format(feature_importance))
+        
+def adaboost(data_train, data_test,
+                 n_estimators=50, learning_rate=1.,
+                 verbose=False):
+    """
+    n_estimators    number of estimators
+    learning_rate   contribution of each classifier 
+                    (tradeoff w/ n_estimators)
+    """
+    adaB = AdaBoostClassifier(
+        n_estimators=n_estimators,
+        learning_rate=learning_rate
+    )
+    
+    # load data
+    X_train = data_train[0]
+    y_train = data_train[1]
+    
+    X_test = data_test[0]
+    y_test = data_test[1]
+    
+    adaB.fit(X_train, y_train)
+    
+    score_train = adaB.score(X_train, y_train)
+    score_test = adaB.score(X_test, y_test)
+    
+    print("Train accuracies {}".format(score_train))
+    print("Test accuracies {}".format(score_test))
 
-def multilayer_perceptron(data_train, data_val, data_test,
-    hidden_layer_sizes, alpha=1e-5, activation='tanh', random_state=None):
+def multilayer_perceptron(data_train, data_val, data_test, hidden_layer_sizes,
+                          alpha=1e-5, activation='tanh', random_state=None):
     """
     alpha: L2 regularization parameter
     activation: can be 'identity', 'logistic', 'tanh', 'relu'
@@ -104,8 +145,6 @@ def multilayer_perceptron(data_train, data_val, data_test,
 
     return (mlp, accuracies, cross_entropies)
 
-
-
 def svm_classify(data_train, data_test, C, kernel='rbf', degree=3, balanced=True):
     """
     C: C-svm param
@@ -115,8 +154,6 @@ def svm_classify(data_train, data_test, C, kernel='rbf', degree=3, balanced=True
     """
     X_train, y_train = data_train
     X_test, y_test = data_test
-
-    print("this shit is slow af, are you sure you want to do this?")
 
     print("Training SVM, C={}, kernel={}, balanced={} ...".format(C, kernel, balanced))
     svm_classifier = sklearn.svm.SVC(C=C, kernel=kernel, degree=degree, coef0=1.0, shrinking=True,
