@@ -64,9 +64,8 @@ We will primarily concern ourselves with classification:
 whether a flight is delayed or not.
 
 % TODO change this section?
-We downloaded data from June 2015 to May 2016, inclusive.
-Each month of data reports on
-approximately 500000 individual flights.
+We downloaded data from June 2015,
+with a total of approximately 500000 individual flights.
 Notably, some of the data is missing.
 We used these data to build a classifier
 that predicts whether or not a flight's departure
@@ -443,13 +442,17 @@ and default values for all other parameters.
 We obtained a testing accuracy of 0.687,
 which is a slight improvement on logistic regression.
 
-\section{Adaboost-SAMME}
+\section{Boosting}
+
+We tried various boosting methods
+with different weak learners as the base estimator,
+which we discuss below.
+
+\subsection{Adaboost-SAMME}
 
 We also applied a variant of the Adaboost algorithm,
 Adaboost-SAMME (stagewise additive modeling
 with a multi-class exponential loss function).
-We used various weak learners as the base estimator,
-which we discuss below.
 
 \begin{figure*}[t]
    \centering
@@ -462,9 +465,6 @@ which we discuss below.
    }
    \label{fig:adaB-params}
 \end{figure*}
-
-
-\subsection{Decision tree classifier}
 
 With an ensemble of 50 decision tree classifiers,
 the Adaboost algorithm performed with
@@ -512,8 +512,8 @@ The results are graphically displayed in Figure \ref{fig:adaB-params}.
 
 \subsection{Boosted logistic regression}
 
-We also tried an ensemble of 50 
-logistic regression models.
+We tried an ensemble of 50 
+logistic regression models with Adaboost.
 It attained a training accuracy of 0.657
 and a testing accuracy of 0.661.
 When we increased to 100 estimators,
@@ -521,10 +521,15 @@ the training accuracy only reached 0.660
 and testing accuracy, 0.662.
 This is worse than the boosted decision trees,
 so it seems that
-logistic regression is not a good model
-to use a weak learner.
+logistic regression is not as good a
+weak learner in this application.
+%
+%\subsection{Gradient tree boosting}
+%
+%We also tried
+%a generalized forward-stage additive model.
 
-\section{Dataset transformations}
+\section{Other dataset transformations}
 \label{sec:dataset}
 
 In addition to the cyclic data mapping,
@@ -551,20 +556,56 @@ training accuracy decreased to 0.811,
 but testing accuracy remained about the same,
 at 0.688.
 
+In addition, we tried representing origin and destination
+as entirely continuous,
+with latitude longitude coordinates.
+This greatly reduced the number of features, from 469 to 7.
+While this approximation ignores the fact that
+geographically close airports might not be very similar,
+it also reduces the computational load.
+Results on accuracy are shown below,
+with the best models determined by validation.
+
+\begin{center}
+    \begin{tabular}{c|cccc}
+        model &
+          LR & RF & AdaB \\\hline
+        training acc. &
+          0.604 & 0.840 & 0.650 \\
+        testing acc. &
+          0.602 & 0.673 & 0.635
+    \end{tabular}
+\end{center}
+
+The fewer features significantly reduced
+logistic regression's and Adaboost's accuracy.
+Interestingly, however, the optimal random forest model
+did not suffer as much of a loss in accuracy.
+
 \subsection{Geographic displacement}
 
-East west vs. vice versa, etc.
+In addition to absolute geographic locations,
+we also considered the displacement
+for each flight.
+With only latitude, longitude, and displacement data
+for airports (no one-hot vectors),
+our best models attained the following accuracies.
 
-\section{Comparison with other methods}
+\begin{center}
+    \begin{tabular}{c|cccc}
+        model &
+          LR & RF & AdaB \\\hline
+        training acc. &
+          0.604 & 0.838 & 0.655 \\
+        testing acc. &
+          0.603 & 0.677 & 0.661
+    \end{tabular}
+\end{center}
 
-We compared our ensemble classifier
-with other types of classifiers,
-including logistic regression, a neural network,
-and a kernelized Pegasos classifier
-with the Gaussian RBF kernel.
-Due to the large size of our dataset,
-we were limited to
-stochastic and minibatch methods.
+While these accuracies are an improvement
+on using solely position data of origin and destination,
+displacements still do not reach the accuracy attained
+by representing airports as one-hot vectors.
 
 \section{Conclusions}
 
