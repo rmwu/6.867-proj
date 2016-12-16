@@ -43,7 +43,6 @@ def pretty_data(data, maps = None, classify=False):
     flight_dates = [0 for x in data["FL_DATE"]] # maps[0](data["FL_DATE"])
     departure_times = data["CRS_DEP_TIME"].astype(str)
     # hella jank conversion...
-    # departure_times = [int(x[1:-1])/2400 for x in departure_times]
     departure_times = [int(x[1:-1]) for x in departure_times]
                     
     # maps[1](data["CRS_DEP_TIME"])
