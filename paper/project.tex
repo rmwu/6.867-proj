@@ -212,6 +212,10 @@ Default values are bootstrapped samples,
 10 estimators, an early stopping impurity threshold of 1e-7,
 and no maximum tree depth,
 feature masking, or warm start.
+Numerical values are provided by
+their corresponding sections;
+the results can be viewed graphically
+in Figure \ref{fig:rf-params}.
 
 \subsection{Bootstrapping}
 
@@ -242,9 +246,13 @@ potentially due to overfitting on more sample points during training.
 
 \begin{figure*}
    \centering
-   \includegraphics[width=3in]{img/rf-numEstimators.pdf}\hspace{-.1in}
-   \includegraphics[width=3in]{img/rf-maxTreeDepth.pdf}
+   \includegraphics[width=3.5in]{img/rf-numEstimators.pdf}\hspace{-.1in}
+   \includegraphics[width=3.5in]{img/rf-maxTreeDepth.pdf}
+   \includegraphics[width=3.5in]{img/rf-impurity.pdf}\hspace{-.1in}
+   \includegraphics[width=3.5in]{img/rf-maskingFeatures.pdf}
    \caption{Varying parameters for random forest classifier.
+   Setting a minimum impurity on leaves and feature masking
+   do not significantly affect validation or testing accuracy.
    }
    \label{fig:rf-params}
 \end{figure*}
