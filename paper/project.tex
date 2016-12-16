@@ -1,7 +1,7 @@
 %\documentclass{amsart}
 
 \documentclass{article}
-\usepackage[letterpaper,hmargin=20mm,vmargin=20mm]{geometry}
+\usepackage[letterpaper,hmargin=0.8in,vmargin=0.8in]{geometry}
 \usepackage[nosetup, colorlinks]{tony}
 \usepackage{graphicx}
 
@@ -152,12 +152,9 @@ and sample representativeness.
 We partitioned the data points into training, validation, and test sets,
 with $80/10/10\%$ of the data, respectively.
 
-% TODO
 
-\section{Linear models}
-
-\subsection{Logistic regression}
-\label{subsec:logreg}
+\section{Logistic regression}
+\label{sec:logreg}
 
 To establish a baseline accuracy
 and to benchmark our future efforts,
@@ -200,12 +197,6 @@ in Figure~\ref{fig:log-reg-c-sweep}.
    for varying values of regularization parameter $C$.}
    \label{fig:log-reg-c-sweep}
 \end{figure*}
-
-
-\subsection{Support vector machines}
-
-We also considered training support vector machines.
-% TODO TODO TODO
 
 
 \section{Multilayer perceptrons}
@@ -272,7 +263,7 @@ over our baseline.
 To see the effects of regularization,
 we considered networks with logistic, tanh, and ReLU activations
 on a single hidden layer of 25 nodes.
-As we did for the parameter $C$ in section~\ref{subsec:logreg},
+As we did for the parameter $C$ in section~\ref{sec:logreg},
 we performed a sweep over log-uniformly spaced $\alpha$ from $10^{-5}$ to $10^5$.
 We present our results in Figure~\ref{fig:mlp-plots}.
 We see marginally better performance by the ReLU model with $\alpha=10^{-3}$.
