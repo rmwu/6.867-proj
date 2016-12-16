@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
 
 def log_regression(data_train, data_validate, data_test,
-                   lambdaa, threshold,
+                   lambdaa, threshold, penalty,
                    print_params=False):
     """
     Uses the SKLearn Logistic Regression module to perform logistic
@@ -20,32 +20,21 @@ def log_regression(data_train, data_validate, data_test,
     lambdaa        regularization?
     threshold      tolerance? I don't remember
     """
-    # load testing data
-    X_train = data_train[0]
-    y_train = data_train[1]
-    
     # regularization factor
     c = 1.0 / lambdaa
     
-    l2reg = LogisticRegression(penalty="l2", C=c, tol=threshold)
-    l1reg = LogisticRegression(penalty="l1", C=c, tol=threshold)
+    log_reg = LogisticRegression(penalty=penalty, C=c, tol=threshold)
     
     # fit the data
-    l2reg.fit(X_train, y_train)
-    l1reg.fit(X_train, y_train)
+    log_reg.fit(*data_train)
 
-    # load data from csv files
-    X_validate = data_validate[0]
-    y_validate = data_validate[1]
-    
-    print("Out-of-the-box scores.")
-    print("L2 accuracy: {}".format(l2reg.score(X_validate, y_validate)))
-    if print_params:
-        print("L2 params {}".format(l2reg.coef_))
-    print("L1 accuracy: {}".format(l1reg.score(X_validate, y_validate)))
-    if print_params:
-        print("L1 params {}".format(l1reg.coef_))
-    print("")
+    dataz = [data_train, data_validate, data_test]
+    accuracies = [log_reg.score(*dataset) for dataset in dataz]
+    print("Train/val/test accuracies: {}".format(accuracies))
+
+    cross_entropies = [sklearn.metrics.log_loss(dataset[1], log_reg.predict_proba(dataset[0]), normalize=True) for dataset in dataz]
+    print("t/v/t cross-entropy loss: {}".format(cross_entropies))
+    return (log_reg, accuracies, cross_entropies)
     
 def random_forest(data_train, data_validate, data_test,
                  n_estimators=10, entropy=True,
@@ -104,9 +93,15 @@ def multilayer_perceptron(data_train, data_test, hidden_layer_sizes, alpha=1e-5,
         hidden_layer_sizes=hidden_layer_sizes, random_state=random_state)
     mlp.fit(X_train, y_train)
 
+    print("Test set accuracy: {}".format(mlp.score(X_test, y_test)))
+
     y_pred = mlp.predict_proba(X_test)
     cross_entropy_loss = sklearn.metrics.log_loss(y_test, y_pred, normalize=True)
-    print("Cross entropy loss: {}".format(cross_entropy_loss))
+    print("Test set cross-entropy loss: {}".format(cross_entropy_loss))
+
+    return mlp
+
+
 
 def svm_classify(data_train, data_test, C, kernel='rbf', degree=3, balanced=True):
     """
