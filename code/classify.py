@@ -47,10 +47,12 @@ def log_regression(data_train, data_validate, data_test,
     
 def random_forest(data_train, data_validate, data_test,
                  n_estimators=10, entropy=True,
-                 max_features=1.0, max_depth=2,
-                 min_samples_leaf=1, bootstrap=True,
+                 max_features=1.0, max_depth=None,
+                 min_samples_leaf=1, min_impurity_split=1e-7, 
+                 bootstrap=True,
                  oob_score=False,
-                 print_params=False):
+                 print_params=False,
+                 warm_start=False):
     """
     Uses the SKLearn Random Forest Classifier to perform
     bagged tree classification
