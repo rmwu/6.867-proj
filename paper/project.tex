@@ -73,7 +73,6 @@ is expected to be delayed.
 We applied several methods of classification
 and compare their results here.
 
-
 \section{Data preprocessing}
 
 % TODO describe this
@@ -557,9 +556,6 @@ The results are graphically displayed in Figure \ref{fig:adaB-params}.
     \end{tabular}
 \end{center}
 
-
-\section{Possible extensions}
-
 \subsection{Boosted logistic regression}
 
 We tried an ensemble of 50 
@@ -573,6 +569,8 @@ This is worse than the boosted decision trees,
 so it seems that
 logistic regression is not as good a
 weak learner in this application.
+
+\section{Possible extensions}
 %
 %\subsection{Gradient tree boosting}
 %
@@ -637,6 +635,46 @@ did not suffer as much of a loss in accuracy.
 In addition to absolute geographic locations,
 we also considered the displacement
 for each flight.
+
+When we consider all the previous features,
+including discrete airports as one-hot vectors,
+the best models attain the following accuracies.
+
+\begin{center}
+    \begin{tabular}{c|cccc}
+        model &
+          LR & RF & AdaB \\\hline
+        training acc. &
+          0.676 & 0.816 & 0.669 \\
+        testing acc. &
+         0.667 & 0.684 & 0.674
+    \end{tabular}
+\end{center}
+
+Interestingly, for the random forest model,
+our features were weighted approximately
+according to what we would intuitively expect.
+Each ``feature'' as part of some one-hot vector
+was individually weighted less than the date or time features;
+latitude, longitude, and displacement were similarly
+heavily weighted.
+
+\begin{center}
+    \begin{tabular}{c|c}
+        feature & weight \\\hline
+        date & 0.260 \\
+        time & 0.131 \\
+        airline & 0.095 \\
+        airport one-hots & 0.286 \\
+        origin (lat long) & 0.112 \\
+        destination (lat long) & 0.105 \\
+        displacement & 0.046
+    \end{tabular}
+\end{center}
+
+In particular, date contributes a lot
+to the final delay estimation.
+
 With only latitude, longitude, and displacement data
 for airports (no one-hot vectors),
 our best models attained the following accuracies.
@@ -646,16 +684,36 @@ our best models attained the following accuracies.
         model &
           LR & RF & AdaB \\\hline
         training acc. &
-          0.604 & 0.838 & 0.655 \\
+          0.656 & 0.846 & 0.655 \\
         testing acc. &
-          0.603 & 0.677 & 0.661
+          0.650 & 0.684 & 0.661
     \end{tabular}
 \end{center}
 
 While these accuracies are an improvement
 on using solely position data of origin and destination,
-displacements still do not reach the accuracy attained
-by representing airports as one-hot vectors.
+While these accuracies still do not reach that of
+representing airports as one-hot vectors,
+they are a significant improvement
+from using only position data of origin and destination.
+
+\begin{center}
+    \begin{tabular}{c|c}
+        feature & weight \\\hline
+        date & 0.280 \\
+        time & 0.270 \\
+        airline & 0.055 \\
+        origin (lat long) & 0.161 \\
+        destination (lat long) & 0.156 \\
+        displacement & 0.078
+    \end{tabular}
+\end{center}
+
+If we analyze relative feature weights,
+we see that displacement still does not contribute very much,
+but time of day's weight significantly increased.
+Thus, flight delay may be somewhat heavily related to
+what time of day a flight occurs at.
 
 \section{Conclusions}
 
