@@ -83,9 +83,10 @@ def pretty_data(data, maps = None, classify=False):
             
         vector = np.append(flight_dates[i], departure_times[i]).tolist()
         
+        onehots = airlines[i]
         # onehots = np.append(airlines[i],origins[i])
         # onehots = np.append(onehots,destinations[i])
-        # vector.extend(onehots.tolist())
+        vector.extend(onehots.tolist())
         
         vector.extend(latlongs_orig[i])
         vector.extend(latlongs_dest[i])
