@@ -53,8 +53,8 @@ def pretty_data(data, maps = None, classify=False):
     # stick your functions here
     flight_dates = list(map(date_to_cyclic, map(str, data["FL_DATE"].astype(str))))
     # [date_to_cyclic(str(date)) for date in data["FL_DATE"].astype(str)]
-    departure_times = list(map(time_to_cyclic, map(lambda x : x[1:-1], map(str, data["CRS_DEP_TIME"].astype(str)))))
-    
+    departure_times = list(map(time_to_cyclic, map(lambda x : str(x)[1:-1], data["CRS_DEP_TIME"].astype(str))))
+        
     # list(map(time_to_cyclic, data["CRS_DEP_TIME"].astype(str)))
     # hella jank conversion...lol
     # departure_times = [int(x[1:-1]) for x in departure_times]
@@ -95,7 +95,7 @@ def pretty_data(data, maps = None, classify=False):
         filename = "data/15_06_classify.csv"
     else:
         filename = "data/15_06_regression.csv"
-    np.savetxt(filename, X, delimiter=",",fmt='%i') # 
+    np.savetxt(filename, X, delimiter=",") # ,fmt='%i'
     return X
 
 def date_to_cyclic(date_str):
