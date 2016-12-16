@@ -6,6 +6,7 @@ import sklearn
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.neural_network import MLPClassifier
 
 def log_regression(data_train, data_validate, data_test,
@@ -86,14 +87,18 @@ def random_forest(data_train, data_validate, data_test,
     
     leaves = randomForest.fit(X_train, y_train)
     feature_importance = randomForest.feature_importances_
-    score = randomForest.score(X_test, y_test)
     
-    print("Out of the box score {}".format(score))
+    scoreTrain = randomForest.score(X_train, y_train)
+    scoreTest = randomForest.score(X_test, y_test)
+    
+    print("Training score {}".format(scoreTrain))
+    print("Testing score {}".format(scoreTest))
     if verbose:
         print("Feature importances {}".format(feature_importance))
         
 def adaboost(data_train, data_test,
                  n_estimators=50, learning_rate=1.,
+                 base_estimator=None,
                  verbose=False):
     """
     n_estimators    number of estimators
@@ -101,6 +106,35 @@ def adaboost(data_train, data_test,
                     (tradeoff w/ n_estimators)
     """
     adaB = AdaBoostClassifier(
+        n_estimators=n_estimators,
+        learning_rate=learning_rate,
+        base_estimator=base_estimator
+    )
+    
+    # load data
+    X_train = data_train[0]
+    y_train = data_train[1]
+    
+    X_test = data_test[0]
+    y_test = data_test[1]
+    
+    adaB.fit(X_train, y_train)
+    
+    score_train = adaB.score(X_train, y_train)
+    score_test = adaB.score(X_test, y_test)
+    
+    print("Train accuracies {}".format(score_train))
+    print("Test accuracies {}".format(score_test))
+    
+def gradboost(data_train, data_test,
+                 n_estimators=50, learning_rate=1.,
+                 verbose=False):
+    """
+    n_estimators    number of estimators
+    learning_rate   contribution of each classifier 
+                    (tradeoff w/ n_estimators)
+    """
+    adaB = GradientBoostingClassifier(
         n_estimators=n_estimators,
         learning_rate=learning_rate
     )
