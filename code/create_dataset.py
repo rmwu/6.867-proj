@@ -129,7 +129,15 @@ def date_to_cyclic(date_str):
     time_struct = time.strptime(date_str, "%Y-%m-%d")
     days_in_year = 366 if calendar.isleap(time_struct.tm_year) else 365
     angular_year_frac = 2 * math.pi * time_struct.tm_yday / days_in_year
-    return np.array([math.cos(angular_year_frac), math.sin(angular_year_frac)])
+
+    days_in_month = calendar.monthrange(time_struct.tm_year, time_str.tm_month)
+    angular_month_frac = 2 * math.pi * time_struct.tm_mday / days_in_month
+
+    angular_week_frac = 2 * math.pi * time_struct.tm_wday / 7
+
+    return np.array([math.cos(angular_year_frac), math.sin(angular_year_frac),
+        math.cos(angular_month_frac), math.sin(angular_month_frac),
+        math.cos(angular_week_frac), math.sin(angular_week_frac)])
 
 def time_to_cyclic(time_str):
     """
@@ -147,6 +155,8 @@ def time_to_cyclic(time_str):
     minutes_in_day = 60 * 24
     angular_day_frac = 2 * math.pi * minutes_elapsed / minutes_in_day
     return np.array([math.cos(angular_day_frac), math.sin(angular_day_frac)])
+
+
 
 def airport_to_latlong(airportID, mappings):
     """
