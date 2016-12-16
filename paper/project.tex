@@ -113,25 +113,93 @@ we began with a simple logistic regression classifier.
 
 We leveraged existing random forest implementations
 and determined the optimal parameters for classifying our data.
+We determined the best model using our validation data
+and tested on our testing data.
+%There may be strong relationships between
+%month of year and airline delay,
+%as the holiday season is often associated with
+%inclement weather and an increase in delays.
+%Therefore, we trained a separate random forest classifier
+%for each month, in additional to a single classifier
+%for the combined data.
+%For each month,
+%the resultant model was an average of
+%that month's classifier and the combined classifier,
+%weighted by validation error.
+%On the testing data,
+%the combined classifier performed better
+%than each classifier alone,
+%perhaps due to increased generalization.
 
-There may be strong relationships between
-month of year and airline delay,
-as the holiday season is often associated with
-inclement weather and an increase in delays.
-Therefore, we trained a separate random forest classifier
-for each month, in additional to a single classifier
-for the combined data.
-For each month,
-the resultant model was an average of
-that month's classifier and the combined classifier,
-weighted by validation error.
+The following sections consider variations on parameters,
+with all else held equal.
+Default values are bootstrapped samples,
+10 estimators, an early stopping impurity threshold of 1e-7,
+and no maximum tree depth,
+feature masking, or warm start.
 
-% TODO INSERT PLOT and data
+\subsection{Bootstrapping}
 
-On the testing data,
-the combined classifier performed better
-than each classifier alone,
-perhaps due to increased generalization.
+Bootstrapping allows us to sample with replacement
+from the dataset,
+emulating sampling from the general population.
+When we sample without replacement instead,
+training accuracy increased,
+but validation accuracy decreased,
+potentially due to overfitting on more sample points during training.
+
+% bootstrap
+%Training data score 0.9757875
+%Testing data score 0.6527087149960743
+%
+% no bootstrap
+%Training data score 0.9998625
+%Testing data score 0.6186862077990055
+\begin{center}
+    \begin{tabular}{c| c c}
+        method & bootstrap & no bootstrap \\
+        training acc
+        		& 0.976 & 0.999 \\
+        validation acc
+        		& 0.653 & 0.619
+    \end{tabular}
+\end{center}
+
+\subsection{Number of estimators}
+
+Random forest contains bagged trees,
+so by changing the number of estimators,
+we can control overfitting and improve prediction accuracy.
+Increasing the number of trees
+improved both training and validation accuracy.
+However, since training more estimators
+is computationally intensive,
+we did not train more than 32 trees.
+%n_estimators 2
+%Training data score 0.9739375
+%Testing data score 0.6351740382098927
+%
+%n_estimators 8
+%Training data score 0.9671375
+%Testing data score 0.6430253860246009
+%
+%n_estimators 16
+%Training data score 0.9887
+%Testing data score 0.6517927244176916
+%
+%n_estimators 32
+%Training data score 0.9971375
+%Testing data score 0.6585972258571055
+\begin{center}
+    \begin{tabular}{c|c c c c}
+        $n$ trees
+        		& 2 & 8 & 16 & 32 \\
+        training acc
+        		& 0.974 & 0.967 & 0.989 & 0.997\\
+        validation acc
+        		& 0.635 & 0.643 & 0.651 & 0.658
+    \end{tabular}
+\end{center}
 
 \subsection{Maximum tree depth}
 
@@ -170,26 +238,51 @@ for some depths.
     \begin{tabular}{c|c c c c c}
         max depth
         		& 4 & 8 & 16 & 34 & 256 \\
-        training accuracy
+        training acc
         		& 0.657 & 0.679 & 0.750 & 0.899 & 0.976\\
-        validation accuracy
+        validation acc
         		& 0.644 & 0.656 & 0.667 & 0.654 & 0.647
     \end{tabular}
 \end{center}
 Imposing a maximum tree depth effectively
 reduces overfitting to training data.
 
-\subsection{Number of estimators}
-
 \subsection{Masking features}
 
-xxx maximum number of features to consider when splitting
+When building each tree,
+we can ignore a subset of features
+when looking for the best split.
+However, masking a percentage of features
+did not significantly affect training or
+validation accuracy.
+This may be due to the sparsity
+of our data, with many one-hot vectors.
 
 \subsection{Early stopping}
 
-or the impurity setting
+If we do not constrain the depth of the tree,
+an alternative method of early stopping
+is to increase the maximum size of each leaf.
+However, changing this value (up and down)
+was not as effective as
+limiting tree depth, and had little effect.
 
-\subsection{Whatever you call ``warm start''}
+\subsection{Warm start}
+
+For each estimator,
+we can either train a new tree from scratch (default),
+or use the results of the previous run
+as a starting point (warm start).
+Warm start had little effect.
+
+\subsection{Optimal model}
+
+Using our validation data,
+we selected the best model
+of 32 estimators, a max depth of 16,
+and default values for all other parameters.
+We obtained a testing accuracy of 0.687\%,
+which is a slight improvement on logistic regression.
 
 \section{Dataset transformations}
 \label{sec:dataset}
