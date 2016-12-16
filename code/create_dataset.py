@@ -60,8 +60,8 @@ def pretty_data(data, maps = None, classify=False):
     # hella jank conversion...lol    
 
     airlines = convert_to_onehot(data["AIRLINE_ID"])[0]
-    origins = convert_to_onehot(data["ORIGIN_AIRPORT_ID"])[0]
-    destinations = convert_to_onehot(data["DEST_AIRPORT_ID"])[0]
+    # origins = convert_to_onehot(data["ORIGIN_AIRPORT_ID"])[0]
+    # destinations = convert_to_onehot(data["DEST_AIRPORT_ID"])[0]
     
     origin_strs = data["ORIGIN_AIRPORT_ID"].astype(str).tolist()
     dest_strs = data["DEST_AIRPORT_ID"].astype(str).tolist()
@@ -83,12 +83,16 @@ def pretty_data(data, maps = None, classify=False):
             
         vector = np.append(flight_dates[i], departure_times[i]).tolist()
         
-        onehots = np.append(airlines[i],origins[i])
-        onehots = np.append(onehots,destinations[i])
-        vector.extend(onehots.tolist())
+        # onehots = np.append(airlines[i],origins[i])
+        # onehots = np.append(onehots,destinations[i])
+        # vector.extend(onehots.tolist())
         
         vector.extend(latlongs_orig[i])
         vector.extend(latlongs_dest[i])
+        
+        displacement = [vector[-1]-vector[-3],
+                        vector[-2]-vector[-4]]
+        # vector.extend(displacement)
         
         # if we want to classify, delays become binary {-1,1}
         if classify:
