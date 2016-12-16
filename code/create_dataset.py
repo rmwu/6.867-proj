@@ -49,6 +49,8 @@ def date_to_cyclic(date_str):
     returns       numpy vector, however you want the cyclic date to be
                   represented in the final flight feature vector
     """
+    assert type(date_str) is str
+
     time_struct = time.strptime(date_str, "%Y-%m-%d")
     days_in_year = 366 if calendar.isleap(time_struct.tm_year) else 365
     angular_year_frac = 2 * math.pi * time_struct.tm_yday / days_in_year
@@ -63,6 +65,8 @@ def time_to_cyclic(time_str):
                   (does not have to be cyclic; just something other than
                   the int, which isn't even smooth)
     """
+    assert type(time_str) is str
+
     time_struct = time.strptime(time_str, "%H%M")
     minutes_elapsed = 60 * time_struct.tm_hour + time_struct.tm_min
     minutes_in_day = 60 * 24

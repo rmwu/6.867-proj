@@ -26,7 +26,7 @@
 \DeclareMathOperator{\NLL}{NLL}
 \newcommand{\sind}[1]{^{(#1)}}
 
-\title{Classifying airline departure delays with ensemble methods}
+\title{Prediction of airline departure delays}
 \author{Tony Zhang and Menghua Wu}
 \date{December 16, 2016}
 
@@ -127,12 +127,30 @@ We mapped these to one-hot vectors,
 whose dimensions were flexible based on
 the number of categories present in the dataset.
 
-\subsection{Cyclic temporal features}
+\subsection{Cyclic features}
 
-Temporal features, such as time of day,
+Features such as time of day and day of year
 are naturally cyclic.
 Representing them on a linear scale
-neglects the fact that
+therefore imposes an unnatural metric on them.
+For instance,
+if we naively represent times as ``minutes into day",
+the time 23:59 will be considered ``more similar"
+by any machine learning model to noon than to 00:01,
+which disagrees with our intuitive notions of closeness.
+
+A better method is to construct a feature map
+that respects our notions of closeness.
+An obvious choice is to map a linear data point $x \in [0, T)$
+onto a unit circle by
+\begin{equation}
+    x \mapsto \lt(\cos\f{2\pi x}{T}, \sin\f{2\pi x}{T}\rt).
+\end{equation}
+In the case of time of day,
+noon would have ``angle" $\f{2\pi x}{T} = \pi$
+and thus get mapped to the point $(-1, 0)$.
+
+% TODO discuss how this goes
 
 \subsection{Geographic relations within data}
 
