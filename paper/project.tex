@@ -45,8 +45,8 @@
 Often, people purchase plane tickets
 to minimize monetary cost.
 However, price is not the only consideration
-when consumers purchase tickets---
-not all flights are created equal.
+when consumers purchase tickets---not
+all flights are created equal.
 In particular,
 flyers often care about and take into account
 the risk that a flight will be delayed.
@@ -315,7 +315,7 @@ potentially due to overfitting on more sample points during training.
 %Testing data score 0.6186862077990055
 \begin{center}
     \begin{tabular}{c| c c}
-        method & bootstrap & no bootstrap \\
+        method & bootstrap & no bootstrap \\\hline
         training acc
         		& 0.976 & 0.999 \\
         validation acc
@@ -351,7 +351,7 @@ we did not train more than 32 trees.
 \begin{center}
     \begin{tabular}{c|c c c c}
         $n$ trees
-        		& 2 & 8 & 16 & 32 \\
+        		& 2 & 8 & 16 & 32 \\\hline
         training acc
         		& 0.974 & 0.967 & 0.989 & 0.997\\
         validation acc
@@ -444,8 +444,8 @@ which is a slight improvement on logistic regression.
 
 \section{Boosting}
 
-We tried various boosting methods
-with different weak learners as the base estimator,
+We tried various boosting methods using existing libraries
+and tested different weak learners as the base estimator,
 which we discuss below.
 
 \subsection{Adaboost-SAMME}
@@ -557,8 +557,7 @@ but testing accuracy remained about the same,
 at 0.688.
 
 In addition, we tried representing origin and destination
-as entirely continuous,
-with latitude longitude coordinates.
+only with latitude longitude coordinates.
 This greatly reduced the number of features, from 469 to 7.
 While this approximation ignores the fact that
 geographically close airports might not be very similar,
