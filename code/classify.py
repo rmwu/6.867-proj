@@ -154,7 +154,7 @@ def gradboost(data_train, data_test,
     print("Train accuracies {}".format(score_train))
     print("Test accuracies {}".format(score_test))
 
-def multilayer_perceptron(data_train, data_test, hidden_layer_sizes,
+def multilayer_perceptron(data_train, data_val, data_test, hidden_layer_sizes,
                           alpha=1e-5, activation='tanh', random_state=None):
     """
     alpha: L2 regularization parameter
@@ -167,11 +167,17 @@ def multilayer_perceptron(data_train, data_test, hidden_layer_sizes,
 
     mlp = MLPClassifier(solver='adam', alpha=alpha, activation=activation,
         hidden_layer_sizes=hidden_layer_sizes, random_state=random_state)
-    mlp.fit(X_train, y_train)
+    mlp.fit(*data_train)
 
-    y_pred = mlp.predict_proba(X_test)
-    cross_entropy_loss = sklearn.metrics.log_loss(y_test, y_pred, normalize=True)
-    print("Cross entropy loss: {}".format(cross_entropy_loss))
+    dataz = [data_train, data_val, data_test]
+    accuracies = [mlp.score(*dataset) for dataset in dataz]
+    print("t/v/t accuracy: {}".format(accuracies))
+
+    cross_entropies = [sklearn.metrics.log_loss(dataset[1], mlp.predict_proba(dataset[0]), normalize=True)
+      for dataset in dataz]
+    print("t/v/t cross-entropy loss: {}".format(cross_entropies))
+
+    return (mlp, accuracies, cross_entropies)
 
 def svm_classify(data_train, data_test, C, kernel='rbf', degree=3, balanced=True):
     """

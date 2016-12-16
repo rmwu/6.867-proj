@@ -1,7 +1,7 @@
 %\documentclass{amsart}
 
 \documentclass{article}
-\usepackage[letterpaper,hmargin=15mm,vmargin=20mm]{geometry}
+\usepackage[letterpaper,hmargin=20mm,vmargin=20mm]{geometry}
 \usepackage[nosetup, colorlinks]{tony}
 \usepackage{graphicx}
 
@@ -173,9 +173,8 @@ we found an almost identical test accuracy of $0.660$.
 
 We present the validation accuracies
 under both regularization schemes
-for all values of $C$ we tested
+for the values of $C$ we tested
 in Figure~\ref{fig:log-reg-c-sweep}.
-
 
 \begin{figure*}[t] %  figure placement: here, top, bottom, or page
    \centering
@@ -186,11 +185,73 @@ in Figure~\ref{fig:log-reg-c-sweep}.
    \label{fig:log-reg-c-sweep}
 \end{figure*}
 
-
 \section{Multilayer perceptrons}
 
+We next attempted to improve upon our previous results
+with multilayer perceptrons:
+vanilla neural networks.
+We minimized mean cross-entropy loss with the Adam optimizer,
+computing gradients by backpropagation.
+Recall that cross-entropy loss for a single data point $x\sind{i}, y\sind{i}$
+is given by
+\begin{equation}
+    J\sind{i}(w) = -y\sind{i}\log\hat y\sind{i} - (1-y\sind{i})\log(1-\hat y\sind{i})
+\end{equation}
+where $y\sind{i}$ is a binary training label (either 0 or 1)
+and where $\hat y\sind{i}$ is the probability estimate from the network.
+
+We also imposed $L_2$ regularization on the network weights,
+governed by regularization parameter $\alpha$,
+such that the training loss function is given by
+\begin{equation}
+    J(w) = \f12\alpha w^T w + \sum_i J\sind{i}(w).
+\end{equation}
+
+We experimented with various architectures, activations, and $\alpha$.
+Given the large space of possible hyperparameter combinations,
+it was infeasible to find a best set of hyperparameters exhaustively.
+As such,
+we explored the effects of each hyperparameter
+by holding values of the others fixed.
+
+\subsection{Architecture}
+
+In experimenting with network architecture,
+we fixed $\alpha = 10^{-5}$.
+We began by exploring different numbers of hidden layers,
+finding that deeper networks provided no significant improvement
+over single-hidden-layer networks.
+Thus, we restricted our attention
+to networks with just a single hidden layer.
+
+We show our findings in Figure~\ref{fig:mlp-plots}
+for three different activation functions on the hidden nodes;
+it's apparent that varying the number of hidden nodes
+did not provide any substantive improvement in our results.
+
+\begin{figure*}[t] %  figure placement: here, top, bottom, or page
+   \centering
+   \includegraphics[width=3in]{img/mlp-one-hidden-layer.pdf}
+   \includegraphics[width=3in]{img/mlp-alpha-experiment.pdf}
+   \caption{Single-layer multilayer perceptron validation accuracies.
+   The plot on the left shows the results of varying the number of hidden nodes
+   while fixing $\alpha = 10^{-5}$.
+   On the right, we fixed the size of the hidden layer at 25 nodes
+   and varied $\alpha$.}
+   \label{fig:mlp-plots}
+\end{figure*}
+
+
+\subsection{Regularization}
+
+
+
+
+% TODO RESULTS
 
 \section{Random forest classification}
+
+We turned to ensemble methods % TODO
 
 \begin{figure*}[t]
    \centering
@@ -225,10 +286,10 @@ and tested on our testing data.
 %than each classifier alone,
 %perhaps due to increased generalization.
 
-The following sections consider variations on parameters,
+The following sections explore the effects of varying hyperparameters,
 with all else held equal.
 Default values are bootstrapped samples,
-10 estimators, an early stopping impurity threshold of 1e-7,
+10 estimators, an early stopping impurity threshold of $10^{-7}$,
 and no maximum tree depth,
 feature masking, or warm start.
 Numerical values are provided by
