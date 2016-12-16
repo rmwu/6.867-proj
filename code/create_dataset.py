@@ -49,19 +49,27 @@ def reload_pretty_data(month, year,
 def pretty_data(data, maps = None, classify=False):
     if maps is None:
         maps = [lambda x:x]*2
+    
+    mappings = load_latlong()
         
     # stick your functions here
     flight_dates = list(map(date_to_cyclic, map(str, data["FL_DATE"].astype(str))))
     # [date_to_cyclic(str(date)) for date in data["FL_DATE"].astype(str)]
     departure_times = list(map(time_to_cyclic, map(lambda x : str(x)[1:-1], data["CRS_DEP_TIME"].astype(str))))
         
-    # list(map(time_to_cyclic, data["CRS_DEP_TIME"].astype(str)))
-    # hella jank conversion...lol
-    # departure_times = [int(x[1:-1]) for x in departure_times]
+    # hella jank conversion...lol    
 
     airlines = convert_to_onehot(data["AIRLINE_ID"])[0]
-    origins = convert_to_onehot(data["ORIGIN_AIRPORT_ID"])[0]
-    destinations = convert_to_onehot(data["DEST_AIRPORT_ID"])[0]
+    # origins = convert_to_onehot(data["ORIGIN_AIRPORT_ID"])[0]
+    # destinations = convert_to_onehot(data["DEST_AIRPORT_ID"])[0]
+    
+    origin_strs = data["ORIGIN_AIRPORT_ID"].astype(str).tolist()
+    dest_strs = data["DEST_AIRPORT_ID"].astype(str).tolist()
+    
+    latlongs_orig = list(map(lambda x : airport_to_latlong(x, mappings),
+                             origin_strs))
+    latlongs_dest = list(map(lambda x : airport_to_latlong(x, mappings),
+                             dest_strs))
     
     delays = data["DEP_DELAY"]
     
@@ -75,9 +83,16 @@ def pretty_data(data, maps = None, classify=False):
             
         vector = np.append(flight_dates[i], departure_times[i]).tolist()
         
-        onehots = np.append(airlines[i],origins[i])
-        onehots = np.append(onehots,destinations[i])
-        vector.extend(onehots.tolist())
+        # onehots = np.append(airlines[i],origins[i])
+        # onehots = np.append(onehots,destinations[i])
+        # vector.extend(onehots.tolist())
+        
+        vector.extend(latlongs_orig[i])
+        vector.extend(latlongs_dest[i])
+        
+        displacement = [vector[-1]-vector[-3],
+                        vector[-2]-vector[-4]]
+        # vector.extend(displacement)
         
         # if we want to classify, delays become binary {-1,1}
         if classify:
@@ -95,6 +110,7 @@ def pretty_data(data, maps = None, classify=False):
         filename = "data/15_06_classify.csv"
     else:
         filename = "data/15_06_regression.csv"
+        
     np.savetxt(filename, X, delimiter=",") # ,fmt='%i'
     return X
 
@@ -131,3 +147,42 @@ def time_to_cyclic(time_str):
     minutes_in_day = 60 * 24
     angular_day_frac = 2 * math.pi * minutes_elapsed / minutes_in_day
     return np.array([math.cos(angular_day_frac), math.sin(angular_day_frac)])
+
+def airport_to_latlong(airportID, mappings):
+    """
+    airportID    int US Dept of Trans id for airport, unique identifier
+    mappings     output from load_latlong
+    
+    returns      tuple (lat, long)
+    """
+    if airportID in mappings:
+        return map(float, mappings[airportID])
+    return [0,0]
+    
+def load_latlong():
+    """
+    loads up latlong csv and returns a np array
+    """
+    filename = "data/airports.csv"
+    
+    data = np.genfromtxt(
+        fname = filename,
+        delimiter = ",", # csv files
+        dtype = None, # figure out string vs. numeric
+        names = True  # read names from first row
+    )
+    
+    # AIRPORT_ID LATITUDE LONGITUDE
+    airports = data["AIRPORT_ID"].astype(str)
+    lats = data["LATITUDE"].astype(str)
+    longs = data["LONGITUDE"].astype(str)
+    
+    assert airports.shape == lats.shape
+    assert lats.shape == longs.shape
+    
+    mappings = {}
+    for (air, lat, longg) in list(zip(airports.tolist(), lats, longs)):
+        mappings[str(air)] = [lat, longg]
+        
+    assert type(mappings) is dict
+    return mappings
