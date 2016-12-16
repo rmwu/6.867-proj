@@ -45,8 +45,8 @@
 Often, people purchase plane tickets
 to minimize monetary cost.
 However, price is not the only consideration
-when consumers purchase tickets---
-not all flights are created equal.
+when consumers purchase tickets---not
+all flights are created equal.
 In particular,
 flyers often care about and take into account
 the risk that a flight will be delayed.
@@ -494,8 +494,8 @@ on our logistic regression baseline.
 
 \section{Boosting}
 
-We tried various boosting methods
-with different weak learners as the base estimator,
+We tried various boosting methods using existing libraries
+and tested different weak learners as the base estimator,
 which we discuss below.
 
 \subsection{Adaboost-SAMME}
@@ -611,8 +611,7 @@ but testing accuracy remained about the same,
 at 0.688.
 
 In addition, we tried representing origin and destination
-as entirely continuous,
-with latitude longitude coordinates.
+only with latitude longitude coordinates.
 This greatly reduced the number of features, from 469 to 7.
 While this approximation ignores the fact that
 geographically close airports might not be very similar,
