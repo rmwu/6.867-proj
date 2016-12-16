@@ -79,7 +79,8 @@ def random_forest(data_train, data_validate, data_test,
     if verbose:
         print("Feature importances {}".format(feature_importance))
 
-def multilayer_perceptron(data_train, data_test, hidden_layer_sizes, alpha=1e-5, activation='tanh', random_state=None):
+def multilayer_perceptron(data_train, data_val, data_test,
+    hidden_layer_sizes, alpha=1e-5, activation='tanh', random_state=None):
     """
     alpha: L2 regularization parameter
     activation: can be 'identity', 'logistic', 'tanh', 'relu'
@@ -91,15 +92,17 @@ def multilayer_perceptron(data_train, data_test, hidden_layer_sizes, alpha=1e-5,
 
     mlp = MLPClassifier(solver='adam', alpha=alpha, activation=activation,
         hidden_layer_sizes=hidden_layer_sizes, random_state=random_state)
-    mlp.fit(X_train, y_train)
+    mlp.fit(*data_train)
 
-    print("Test set accuracy: {}".format(mlp.score(X_test, y_test)))
+    dataz = [data_train, data_val, data_test]
+    accuracies = [mlp.score(*dataset) for dataset in dataz]
+    print("t/v/t accuracy: {}".format(accuracies))
 
-    y_pred = mlp.predict_proba(X_test)
-    cross_entropy_loss = sklearn.metrics.log_loss(y_test, y_pred, normalize=True)
-    print("Test set cross-entropy loss: {}".format(cross_entropy_loss))
+    cross_entropies = [sklearn.metrics.log_loss(dataset[1], mlp.predict_proba(dataset[0]), normalize=True)
+      for dataset in dataz]
+    print("t/v/t cross-entropy loss: {}".format(cross_entropies))
 
-    return mlp
+    return (mlp, accuracies, cross_entropies)
 
 
 
