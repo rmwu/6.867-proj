@@ -147,9 +147,6 @@ and sample representativeness.
 We partitioned the data points into training, validation, and test sets,
 with $80/10/10\%$ of the data, respectively.
 
-
-
-
 % TODO
 
 \section{Logistic regression}
@@ -157,7 +154,8 @@ with $80/10/10\%$ of the data, respectively.
 
 To establish a baseline accuracy
 and to benchmark our future efforts,
-we began with a regularized logistic regression classifier
+we began with a standard implementation
+of a logistic regression classifier
 with $L_2$ regularization.
 Recall that such a classifier attempts to minimize a loss of the form
 \begin{equation}
@@ -201,7 +199,8 @@ in Figure~\ref{fig:log-reg-c-sweep}.
 We next attempted to improve upon our previous results
 with multilayer perceptrons:
 vanilla neural networks.
-We minimized mean cross-entropy loss with the Adam optimizer,
+With an existing implementation,
+we minimized mean cross-entropy loss with the Adam optimizer,
 computing gradients by backpropagation.
 Recall that cross-entropy loss for a single data point $x\sind{i}, y\sind{i}$
 is given by
@@ -328,10 +327,11 @@ by tweaking the value of one at a time,
 holding all else equal to the following defaults:
 bootstrapped samples,
 10 estimators,
-an early stopping impurity threshold of $10^{-7}$,
+a maximum leaf-node impurity threshold of $10^{-7}$,
 and no maximum tree depth,
 feature masking, or warm start.
-The results of all these experiments
+Trees were trained under Gini impurity.
+The results of these experiments
 are presented graphically in Figure~\ref{fig:rf-params}.
 
 \subsection{Bootstrapping}
@@ -402,12 +402,13 @@ Our results are as follows and in Figure~\ref{fig:rf-params}.
 
 We see that there is slight,
 but nontrivial, improvement in validation accuracies
-as we enlarge our ensemble.
+as our ensemble grows.
 
 \subsection{Maximum tree depth}
 
-By default, tree depth is unconstrained,
-so the classifier runs until all nodes
+By default,
+the depths of the individual decision trees are unconstrained,
+so that the model training runs until all nodes
 are expanded into valid leaves.
 We experimented with imposing a maximum depth
 as a form of early stopping.
@@ -457,20 +458,19 @@ by regularizing the complexity of individual decision trees.
 When building each tree,
 we can ignore a subset of features
 when looking for the best split.
-However, masking a percentage of features
-did not significantly affect training or
-validation accuracy.
-This may be due to the sparsity
-of our data, with many one-hot vectors.
+Feature masking did not significantly affect
+training or validation accuracy.
+This may be due to the sparsity of our data,
+a consequence of our use of one-hot encodings.
 
 \subsection{Early stopping}
 
 If we do not constrain the depth of the tree,
-an alternative method of early stopping
-is to increase the minimum tolerable impurity at each leaf.
-However, changing this value (up and down)
-was not as effective as
-limiting tree depth, and had little effect.
+an alternative regularization appraoch
+is to increase the minimum tolerable Gini impurity at each leaf.
+However,
+changing this value had little effect,
+and was not as effective as limiting tree depth.
 
 \subsection{Warm start}
 
@@ -478,16 +478,19 @@ For each estimator,
 we can either train a new tree from scratch (default),
 or use the results of the previous run
 as a starting point (warm start).
-Warm start had little effect.
+Preliminary experiments showed that using a warm start
+had little effect.
+We did not explore usage of warm starts further.
 
 \subsection{Optimal model}
 
-Using our validation data,
+Based on validation accuracy,
 we selected the best model
 of 32 estimators, a max depth of 16,
 and default values for all other parameters.
 We obtained a testing accuracy of 0.687,
-which is a slight improvement on logistic regression.
+a slight, but significant, improvement
+on our logistic regression baseline.
 
 \section{Boosting}
 
