@@ -122,15 +122,15 @@ onto a unit circle by
 \end{equation}
 For instance, if we were to encode the time of day,
 noon would have ``angle" $\f{2\pi x}{T} = \pi$
-and would thus get mapped to the point $(-1, 0)$.
+and would thus get mapped to the point $(-1, 0)$:
 
-\begin{minipage}{\linewidth}
-    \centering
+\begin{center}
     \input{tex/cyclic-diagram-tikz.tex}
-\end{minipage}
+\end{center}
 
 We encoded dates (with $T$ being a year)
-and time (with $T$ being a single day).
+and time (with $T$ being a single day)
+in this fashion.
 In preliminary testing,
 we found that this encoding
 noticeably improved classification accuracies
@@ -139,9 +139,21 @@ including logistic regression and random forests.
 
 \subsection{Dataset partitioning}
 
+For the purposes of the following experiments,
+we limited ourselves to a random sample of 40000 flights
+from June 2016;
+we found this size a good compromise between computational tractability
+and sample representativeness.
+We partitioned the data points into training, validation, and test sets,
+with $80/10/10\%$ of the data, respectively.
+
+
+
+
 % TODO
 
 \section{Logistic regression}
+\label{sec:logreg}
 
 To establish a baseline accuracy
 and to benchmark our future efforts,
@@ -226,7 +238,8 @@ to networks with just a single hidden layer.
 We show our findings in Figure~\ref{fig:mlp-plots}
 for three different activation functions on the hidden nodes;
 it's apparent that varying the number of hidden nodes
-did not provide any substantive improvement in our results.
+did not provide any substantive improvement in our results
+over our baseline.
 
 \begin{figure*}[t] %  figure placement: here, top, bottom, or page
    \centering
@@ -243,32 +256,56 @@ did not provide any substantive improvement in our results.
 
 \subsection{Regularization}
 
+To see the effects of regularization,
+we considered networks with logistic, tanh, and ReLU activations
+on a single hidden layer of 25 nodes.
+As we did for the parameter $C$ in section~\ref{sec:logreg},
+we performed a sweep over log-uniformly spaced $\alpha$ from $10^{-5}$ to $10^5$.
+We present our results in Figure~\ref{fig:mlp-plots}.
+We see marginally better performance by the ReLU model with $\alpha=10^{-3}$.
+With a test accuracy of $0.647$, however,
+this model did not improve upon our logistic regression baseline.
 
-
-
-% TODO RESULTS
 
 \section{Random forest classification}
 
-We turned to ensemble methods % TODO
+We next turned to ensemble methods
+to improve upon our previous results.
+We began by experimenting with
+existing implementations of random forest classifiers.
+In particular,
+we explored the effects of varying hyperparameters such as
+\begin{itemize}
+    \item
+    bootstrapping
+    \item
+    number of decision trees
+    \item
+    impurity threshold
+    \item
+    maximum tree depth
+    \item
+    feature masking
+    \item
+    warm starting
+\end{itemize}
 
 \begin{figure*}[t]
    \centering
-   \includegraphics[width=3.5in]{img/rf-numEstimators.pdf}\hspace{-.1in}
-   \includegraphics[width=3.5in]{img/rf-maxTreeDepth.pdf}
-   \includegraphics[width=3.5in]{img/rf-impurity.pdf}\hspace{-.1in}
-   \includegraphics[width=3.5in]{img/rf-maskingFeatures.pdf}
+   \includegraphics[width=3in]{img/rf-numEstimators.pdf}\hspace{-.1in}
+   \includegraphics[width=3in]{img/rf-maxTreeDepth.pdf}
+   \includegraphics[width=3in]{img/rf-impurity.pdf}\hspace{-.1in}
+   \includegraphics[width=3in]{img/rf-maskingFeatures.pdf}
    \caption{Varying parameters for random forest classifier.
-   Setting a minimum impurity on leaves and feature masking
-   do not significantly affect validation or testing accuracy.
-   }
+     Setting a minimum impurity on leaves and feature masking
+     do not significantly affect validation or testing accuracy.}
    \label{fig:rf-params}
 \end{figure*}
 
-We leveraged existing random forest implementations
-and determined the optimal parameters for classifying our data.
-We determined the best model using our validation data
-and tested on our testing data.
+%We leveraged existing random forest implementations
+%and determined the optimal parameters for classifying our data.
+%We determined the best model using our validation data
+%and tested on our testing data.
 %There may be strong relationships between
 %month of year and airline delay,
 %as the holiday season is often associated with
@@ -285,23 +322,26 @@ and tested on our testing data.
 %than each classifier alone,
 %perhaps due to increased generalization.
 
-The following sections explore the effects of varying hyperparameters,
-with all else held equal.
-Default values are bootstrapped samples,
-10 estimators, an early stopping impurity threshold of $10^{-7}$,
+In the following sections,
+we explore the effects of varying hyperparameters,
+by tweaking the value of one at a time,
+holding all else equal to the following defaults:
+bootstrapped samples,
+10 estimators,
+an early stopping impurity threshold of $10^{-7}$,
 and no maximum tree depth,
 feature masking, or warm start.
-Numerical values are provided by
-their corresponding sections;
-the results can be viewed graphically
-in Figure \ref{fig:rf-params}.
+The results of all these experiments
+are presented graphically in Figure~\ref{fig:rf-params}.
 
 \subsection{Bootstrapping}
 
-Bootstrapping allows us to sample with replacement
-from the dataset,
+Recall that bootstrapping involves
+training estimators on subsets of the training data
+sampled \emph{with} replacement from the dataset,
 emulating sampling from the general population.
-When we sample without replacement instead,
+When we sampled without replacement instead
+(i.e. no bootstrapping),
 training accuracy increased,
 but validation accuracy decreased,
 potentially due to overfitting on more sample points during training.
@@ -325,14 +365,15 @@ potentially due to overfitting on more sample points during training.
 
 \subsection{Number of estimators}
 
-Random forest contains bagged trees,
-so by changing the number of estimators,
-we can control overfitting and improve prediction accuracy.
+A key hyperparameter in random forests,
+as in all enesemble methods, is the number of estimators,
+which impacts overfitting and prediction accuracy.
 Increasing the number of trees
 improved both training and validation accuracy.
 However, since training more estimators
 is computationally intensive,
 we did not train more than 32 trees.
+Our results are as follows and in Figure~\ref{fig:rf-params}.
 %n_estimators 2
 %Training data score 0.9739375
 %Testing data score 0.6351740382098927
@@ -359,6 +400,10 @@ we did not train more than 32 trees.
     \end{tabular}
 \end{center}
 
+We see that there is slight,
+but nontrivial, improvement in validation accuracies
+as we enlarge our ensemble.
+
 \subsection{Maximum tree depth}
 
 By default, tree depth is unconstrained,
@@ -366,9 +411,10 @@ so the classifier runs until all nodes
 are expanded into valid leaves.
 We experimented with imposing a maximum depth
 as a form of early stopping.
-This method generally decreased training accuracy,
+Unsurprisingly,
+a maximum depth generally decreased training accuracy,
 but increased validation accuracy
-for some depths.
+in some cases.
 %max_depth_leaf 4
 %Training data score 0.6570625
 %Testing data score 0.6447265113844544
@@ -402,8 +448,9 @@ for some depths.
           0.644 & 0.656 & 0.667 & 0.654 & 0.647
     \end{tabular}
 \end{center}
-Imposing a maximum tree depth effectively
-reduces overfitting to training data.
+Indeed, a maximum tree depth effectively
+reduces overfitting to training data
+by regularizing the complexity of individual decision trees.
 
 \subsection{Masking features}
 
@@ -456,8 +503,8 @@ with a multi-class exponential loss function).
 
 \begin{figure*}[t]
    \centering
-   \includegraphics[width=3.5in]{img/adaB-numEstimators.pdf}\hspace{-.1in}
-   \includegraphics[width=3.5in]{img/adaB-learningRate.pdf}
+   \includegraphics[width=3in]{img/adaB-numEstimators.pdf}\hspace{-.1in}
+   \includegraphics[width=3in]{img/adaB-learningRate.pdf}
    \caption{Varying parameters for the Adaboost-SAMME classifier,
    with a decision tree weak learner.
    Increasing number of estimators accuracy,
@@ -502,13 +549,16 @@ The results are graphically displayed in Figure \ref{fig:adaB-params}.
 \begin{center}
     \begin{tabular}{c|ccccc}
         learning rate &
-          .2 & .4 & .6 & .8 & 1.0 \\\hline
+          0.2 & 0.4 & 0.6 & 0.8 & 1.0 \\\hline
         training acc. &
           0.654& 0.663& 0.665& 0.667& 0.668\\
         validation acc. &
           0.661& 0.668& 0.671& 0.672& 0.672
     \end{tabular}
 \end{center}
+
+
+\section{Possible extensions}
 
 \subsection{Boosted logistic regression}
 
@@ -528,6 +578,7 @@ weak learner in this application.
 %
 %We also tried
 %a generalized forward-stage additive model.
+
 
 \section{Other dataset transformations}
 \label{sec:dataset}
