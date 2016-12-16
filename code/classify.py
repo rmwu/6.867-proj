@@ -186,15 +186,28 @@ def svm_classify(data_train, data_val, data_test, C, kernel='rbf', degree=3, bal
     svm_classifier.fit(*data_train)
     
     accuracies = get_accuracies(svm_classifier, dataz)
-    print("tvt accuracies {}".format(accuracy))
     cross_entropies = get_cross_entropies(svm_classifier, dataz)
-    print("tvt x-entrop {}".format(cross_entropies))
-
     return (svm_classifier, accuracies, cross_entropies)
 
+def sgd_svm_classify(data_train, data_val, data_test, alpha):
+    dataz = (data_train, data_val, data_test)
+
+    print("Training SVM, alpha={} ...".format(alpha))
+    sgd_svm = sklearn.linear_model.SGDClassifier(alpha=alpha)
+    sgd_svm.fit(*data_train)
+    
+    accuracies = get_accuracies(svm_classifier, dataz)
+    cross_entropies = get_cross_entropies(svm_classifier, dataz)
+    return (sgd_svm, accuracies, cross_entropies)
+
+
 def get_accuracies(classifier, dataz):
-    return [classifier.score(*dataset) for dataset in dataz]
+    accuracies = [classifier.score(*dataset) for dataset in dataz]
+    print("tvt accuracies {}".format(accuracies))
+    return accuracies
 
 def get_cross_entropies(classifier, dataz):
-    return [sklearn.metrics.log_loss(dataset[1], classifier.predict_proba(dataset[0]), normalize=True)
+    cross_entropies =  [sklearn.metrics.log_loss(dataset[1], classifier.predict_proba(dataset[0]), normalize=True)
       for dataset in dataz]
+    print("tvt x-entrop {}".format(cross_entropies))
+    return cross_entropies
