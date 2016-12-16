@@ -123,15 +123,15 @@ onto a unit circle by
 \end{equation}
 For instance, if we were to encode the time of day,
 noon would have ``angle" $\f{2\pi x}{T} = \pi$
-and would thus get mapped to the point $(-1, 0)$.
+and would thus get mapped to the point $(-1, 0)$:
 
-\begin{minipage}{\linewidth}
-    \centering
+\begin{center}
     \input{tex/cyclic-diagram-tikz.tex}
-\end{minipage}
+\end{center}
 
 We encoded dates (with $T$ being a year)
-and time (with $T$ being a single day).
+and time (with $T$ being a single day)
+in this fashion.
 In preliminary testing,
 we found that this encoding
 noticeably improved classification accuracies
@@ -143,6 +143,7 @@ including logistic regression and random forests.
 % TODO
 
 \section{Logistic regression}
+\label{sec:logreg}
 
 To establish a baseline accuracy
 and to benchmark our future efforts,
@@ -244,7 +245,12 @@ did not provide any substantive improvement in our results.
 
 \subsection{Regularization}
 
-
+To see the effects of regularization,
+we considered networks with logistic, tanh, and ReLU activations
+on a single hidden layer of 25 nodes.
+As we did for the parameter $C$ in section~\ref{sec:logreg},
+we performed a sweep over log-uniformly spaced $\alpha$ from $10^{-5}$ to $10^5$.
+We present our results in Figure~\ref{fig:mlp-plots};
 
 
 % TODO RESULTS
@@ -255,10 +261,10 @@ We turned to ensemble methods % TODO
 
 \begin{figure*}[t]
    \centering
-   \includegraphics[width=3.5in]{img/rf-numEstimators.pdf}\hspace{-.1in}
-   \includegraphics[width=3.5in]{img/rf-maxTreeDepth.pdf}
-   \includegraphics[width=3.5in]{img/rf-impurity.pdf}\hspace{-.1in}
-   \includegraphics[width=3.5in]{img/rf-maskingFeatures.pdf}
+   \includegraphics[width=3in]{img/rf-numEstimators.pdf}\hspace{-.1in}
+   \includegraphics[width=3in]{img/rf-maxTreeDepth.pdf}
+   \includegraphics[width=3in]{img/rf-impurity.pdf}\hspace{-.1in}
+   \includegraphics[width=3in]{img/rf-maskingFeatures.pdf}
    \caption{Varying parameters for random forest classifier.
    Setting a minimum impurity on leaves and feature masking
    do not significantly affect validation or testing accuracy.
@@ -453,8 +459,8 @@ which we discuss below.
 
 \begin{figure*}[t]
    \centering
-   \includegraphics[width=3.5in]{img/adaB-numEstimators.pdf}\hspace{-.1in}
-   \includegraphics[width=3.5in]{img/adaB-learningRate.pdf}
+   \includegraphics[width=3in]{img/adaB-numEstimators.pdf}\hspace{-.1in}
+   \includegraphics[width=3in]{img/adaB-learningRate.pdf}
    \caption{Varying parameters for the Adaboost-SAMME classifier,
    with a decision tree weak learner.
    Increasing number of estimators accuracy,
