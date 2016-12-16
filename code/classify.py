@@ -167,7 +167,7 @@ def multilayer_perceptron(data_train, data_val, data_test, hidden_layer_sizes,
 
     return (mlp, accuracies, cross_entropies)
 
-def svm_classify(data_train, data_test, C, kernel='rbf', degree=3, balanced=True):
+def svm_classify(data_train, data_val, data_test, C, kernel='rbf', degree=3, balanced=True):
     """
     C: C-svm param
     kernel: the kernel
@@ -177,11 +177,24 @@ def svm_classify(data_train, data_test, C, kernel='rbf', degree=3, balanced=True
     X_train, y_train = data_train
     X_test, y_test = data_test
 
+    dataz = (data_train, data_val, data_test)
+
     print("Training SVM, C={}, kernel={}, balanced={} ...".format(C, kernel, balanced))
     svm_classifier = sklearn.svm.SVC(C=C, kernel=kernel, degree=degree, coef0=1.0, shrinking=True,
         tol=0.001, class_weight=('balanced' if balanced else None),
         verbose=False, decision_function_shape='ovr')
-    svm_classifier.fit(X_train, y_train)
-    accuracy = svm_classifier.score(X_test, y_test)
-    print("SVM accuracy {}".format(accuracy))
-    return accuracy
+    svm_classifier.fit(*data_train)
+    
+    accuracies = get_accuracies(svm_classifier, dataz)
+    print("tvt accuracies {}".format(accuracy))
+    cross_entropies = get_cross_entropies(svm_classifier, dataz)
+    print("tvt x-entrop {}".format(cross_entropies))
+
+    return (svm_classifier, accuracies, cross_entropies)
+
+def get_accuracies(classifier, dataz):
+    return [classifier.score(*dataset) for dataset in dataz]
+
+def get_cross_entropies(classifier, dataz):
+    return [sklearn.metrics.log_loss(dataset[1], classifier.predict_proba(dataset[0]), normalize=True)
+      for dataset in dataz]
