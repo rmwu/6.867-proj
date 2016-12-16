@@ -449,15 +449,27 @@ The results are graphically displayed in Figure \ref{fig:adaB-params}.
     \end{tabular}
 \end{center}
 
+\subsection{Boosted logistic regression}
+
+We also tried an ensemble of 50 
+logistic regression models.
+It attained a training accuracy of 0.657
+and a testing accuracy of 0.661.
+When we increased to 100 estimators,
+the training accuracy only reached 0.660
+and testing accuracy, 0.662.
+This is worse than the boosted decision trees,
+so it seems that
+logistic regression is not a good model
+to use a weak learner.
+
 \section{Dataset transformations}
 \label{sec:dataset}
 
-The raw dataset from the BTS
-includes unconventional features,
-so we preprocessed our dataset
-to improve classification feasibility.
-
-Use best parameters from previous section.
+In addition to the cyclic data mapping,
+we also explored other data transformations.
+We applied the best models from the previous sections
+on these data.
 
 \subsection{Geographic relations within data}
 
@@ -467,6 +479,16 @@ each airport with an equal probability of causing delays.
 That is, the distance between any two airports
 (as one-hot vectors) is the same.
 However, this may not be the case in the real world.
+With a separate table that mapped
+airport IDs to latitude-longitude,
+we added 4 additional columns to the data,
+for the latitude and longitude of origin and destination airports.
+
+With these adjustments,
+our best random forest model,
+training accuracy decreased to 0.811,
+but testing accuracy remained about the same,
+at 0.688.
 
 \subsection{Geographic displacement}
 
