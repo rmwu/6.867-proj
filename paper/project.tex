@@ -68,7 +68,7 @@ whether a flight is delayed or not.
 % TODO change this section?
 We downloaded data from the month of June 2015,
 with a total of approximately 500000 individual flights.
-Notably, some of the data is missing.
+Notably, some of the delay data is missing.
 We used these data to build a classifier
 that predicts whether or not a flight's departure
 is expected to be delayed.
@@ -77,14 +77,16 @@ and compare their results here.
 
 While we will briefly remind the reader
 of particular aspects of each model,
-we assume familiarity them.
+we assume familiarity with them.
 As a reference for implementation details and model specifics,
 we direct the reader to \cite{sklearn-ug}.
 
 \section{Data preprocessing}
 
 For simplicity,
-we only considered the following data features:
+we only considered the following data features.
+These features are also likely to be available to
+customers who are planning their flights.
 \begin{itemize}
     \item
     Departure date and time
@@ -134,8 +136,8 @@ and would thus get mapped to the point $(-1, 0)$:
     \input{tex/cyclic-diagram-tikz.tex}
 \end{center}
 
-We encoded dates (with $T$ being a year)
-and time (with $T$ being a single day)
+We encoded dates (with $T$ being days in a year)
+and time (with $T$ being minutes in a single day)
 in this fashion.
 In preliminary testing,
 we found that this encoding
@@ -302,7 +304,7 @@ we explored the effects of varying hyperparameters such as
    \includegraphics[width=\halfwidth]{img/rf-impurity.pdf}\hspace{-.1in}
    \includegraphics[width=\halfwidth]{img/rf-maskingFeatures.pdf}
    \caption{Varying parameters for random forest classifier.
-     Setting a minimum impurity on leaves and feature masking
+     Setting a minimum Gini impurity on leaves and masking features
      do not significantly affect validation or testing accuracy.}
    \label{fig:rf-params}
 \end{figure*}
@@ -807,14 +809,14 @@ using the best models (determined by validation).
     \end{tabular}
 \end{center}
 
-This improve is expected,
+This improvement is expected,
 since large datasets are more tolerant of overfitting.
 
 \section{Conclusions}
 
 In the end,
 we found that our optimal random forest model
-trained on a larger dataset only gave accuracy about $70\%$,
+trained on a larger dataset gave an accuracy of about $70\%$,
 only a few percentage points higher
 than the baseline accuracy produced by logistic regression.
 
@@ -836,6 +838,13 @@ performed only slightly better.
 The biggest accuracy gain throughout all our experiments
 came from the use of the cyclic feature mapping
 from section~\ref{subsec:cyc-feat}.
+Further improvements might be attained from
+increasing the size of our dataset,
+both in sample size and number of features.
+However, we have found that it is difficult to predict
+with high accuracy,
+whether or not a flight will be delayed,
+from basic information available to customers before the flight.
 
 \section{Divison of labor}
 
