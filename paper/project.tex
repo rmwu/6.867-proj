@@ -65,7 +65,6 @@ including carrier, origin and destination, and flight delays.
 We will primarily concern ourselves with classification:
 whether a flight is delayed or not.
 
-% TODO change this section?
 We downloaded data from the month of June 2015,
 with a total of approximately 500000 individual flights.
 Notably, some of the delay data is missing.
@@ -777,9 +776,21 @@ we encode the day of the week as a cyclic feature
 (see section~\ref{subsec:cyc-feat}).
 We also encode the day of the \emph{month} in the same way,
 since it is conceivable that delays might depend on time of month.
+With these additional cyclic features,
+our testing accuracies did not improve much
+from our previous best model,
+as shown below.
 
-% TODO results
-
+\begin{center}
+    \begin{tabular}{c|cccc}
+        model &
+          LR & RF & AdaB \\\hline
+        training acc. &
+          0.676 & 0.817 & 0.660 \\
+        testing acc. &
+          0.670 & 0.684 & 0.662
+    \end{tabular}
+\end{center}
 
 \subsection{Larger datasets}
 
@@ -810,7 +821,8 @@ using the best models (determined by validation).
 \end{center}
 
 This improvement is expected,
-since large datasets are more tolerant of overfitting.
+since large datasets are more tolerant of overfitting
+and more representative of the population data.
 
 \section{Conclusions}
 
