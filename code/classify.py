@@ -195,11 +195,10 @@ def sgd_svm_classify(data_train, data_val, data_test, alpha):
     print("Training SVM, alpha={} ...".format(alpha))
     sgd_svm = sklearn.linear_model.SGDClassifier(alpha=alpha)
     sgd_svm.fit(*data_train)
-    
+
     accuracies = get_accuracies(svm_classifier, dataz)
     cross_entropies = get_cross_entropies(svm_classifier, dataz)
     return (sgd_svm, accuracies, cross_entropies)
-
 
 def get_accuracies(classifier, dataz):
     accuracies = [classifier.score(*dataset) for dataset in dataz]
