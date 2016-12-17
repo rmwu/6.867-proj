@@ -489,6 +489,7 @@ had little effect.
 We did not explore usage of warm starts further.
 
 \subsection{Optimal model}
+\label{subsec:rf-opt}
 
 Based on validation accuracy,
 we selected the best model
@@ -817,11 +818,24 @@ trained on a larger dataset only gave accuracy about $70\%$,
 only a few percentage points higher
 than the baseline accuracy produced by logistic regression.
 
-Indeed
+Indeed, as we found,
+much of the work in applying machine learning techniques
+to a new problem ``in the wild"
+involves cleaning data
+extracting meaningful features,
+and applying and encoding domain knowledge
+into our representation of the data
+(for example, our cyclic feature mapping).
 
-% most of the work is in feature engineering
-% domain knowledge helps a lot
-
+Notably, more expressive models
+did not produce meaningful improvements in accuracy
+over our most basic logistic regression baseline.
+The best ``fancy" model
+(the random forest in section~\ref{subsec:rf-opt})
+performed only slightly better.
+The biggest accuracy gain throughout all our experiments
+came from the use of the cyclic feature mapping
+from section~\ref{subsec:cyc-feat}.
 
 \section{Divison of labor}
 
