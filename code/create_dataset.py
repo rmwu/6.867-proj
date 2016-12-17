@@ -60,8 +60,8 @@ def pretty_data(data, maps = None, classify=False):
     # hella jank conversion...lol    
 
     airlines = convert_to_onehot(data["AIRLINE_ID"])[0]
-    # origins = convert_to_onehot(data["ORIGIN_AIRPORT_ID"])[0]
-    # destinations = convert_to_onehot(data["DEST_AIRPORT_ID"])[0]
+    origins = convert_to_onehot(data["ORIGIN_AIRPORT_ID"])[0]
+    destinations = convert_to_onehot(data["DEST_AIRPORT_ID"])[0]
     
     origin_strs = data["ORIGIN_AIRPORT_ID"].astype(str).tolist()
     dest_strs = data["DEST_AIRPORT_ID"].astype(str).tolist()
@@ -83,9 +83,8 @@ def pretty_data(data, maps = None, classify=False):
             
         vector = np.append(flight_dates[i], departure_times[i]).tolist()
         
-        onehots = airlines[i]
-        # onehots = np.append(airlines[i],origins[i])
-        # onehots = np.append(onehots,destinations[i])
+        onehots = np.append(airlines[i],origins[i])
+        onehots = np.append(onehots,destinations[i])
         vector.extend(onehots.tolist())
         
         vector.extend(latlongs_orig[i])
@@ -93,7 +92,7 @@ def pretty_data(data, maps = None, classify=False):
         
         displacement = [vector[-1]-vector[-3],
                         vector[-2]-vector[-4]]
-        # vector.extend(displacement)
+        vector.extend(displacement)
         
         # if we want to classify, delays become binary {-1,1}
         if classify:
@@ -130,15 +129,7 @@ def date_to_cyclic(date_str):
     time_struct = time.strptime(date_str, "%Y-%m-%d")
     days_in_year = 366 if calendar.isleap(time_struct.tm_year) else 365
     angular_year_frac = 2 * math.pi * time_struct.tm_yday / days_in_year
-
-    days_in_month = calendar.monthrange(time_struct.tm_year, time_str.tm_month)
-    angular_month_frac = 2 * math.pi * time_struct.tm_mday / days_in_month
-
-    angular_week_frac = 2 * math.pi * time_struct.tm_wday / 7
-
-    return np.array([math.cos(angular_year_frac), math.sin(angular_year_frac),
-        math.cos(angular_month_frac), math.sin(angular_month_frac),
-        math.cos(angular_week_frac), math.sin(angular_week_frac)])
+    return np.array([math.cos(angular_year_frac), math.sin(angular_year_frac)])
 
 def time_to_cyclic(time_str):
     """
@@ -156,8 +147,6 @@ def time_to_cyclic(time_str):
     minutes_in_day = 60 * 24
     angular_day_frac = 2 * math.pi * minutes_elapsed / minutes_in_day
     return np.array([math.cos(angular_day_frac), math.sin(angular_day_frac)])
-
-
 
 def airport_to_latlong(airportID, mappings):
     """
